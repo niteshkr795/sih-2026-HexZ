@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Shield,
   CheckCircle2,
@@ -35,6 +37,7 @@ import {
 type RoleType = "businessman" | "lmo" | "gatc" | "admin";
 
 export default function LandingPage() {
+  const router = useRouter();
   const [selectedRole, setSelectedRole] = useState<RoleType>("businessman");
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -283,6 +286,14 @@ export default function LandingPage() {
 
           {/* Action CTAs */}
           <div className="flex items-center space-x-3">
+            <Link
+              href="/trader"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-200"
+            >
+              <Building2 className="w-4 h-4 text-blue-600" />
+              <span>Trader Portal</span>
+            </Link>
+
             <a
               href="#verification"
               className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors border border-slate-200"
@@ -390,12 +401,12 @@ export default function LandingPage() {
             {/* Quick Portal Switcher Pills */}
             <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs text-slate-600">
               <span className="font-semibold text-slate-700 mr-1">Direct Stakeholder Portals:</span>
-              <button
-                onClick={() => openLoginForRole("businessman")}
-                className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-blue-500 hover:text-blue-600 shadow-sm font-medium transition-all"
+              <Link
+                href="/trader"
+                className="px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 shadow-sm font-bold transition-all flex items-center gap-1"
               >
-                🏢 Business / Trader
-              </button>
+                🏢 Business / Trader Portal →
+              </Link>
               <button
                 onClick={() => openLoginForRole("lmo")}
                 className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-emerald-500 hover:text-emerald-600 shadow-sm font-medium transition-all"
@@ -570,20 +581,30 @@ export default function LandingPage() {
                     </p>
                   </div>
 
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openLoginForRole(roleKey);
-                    }}
-                    className={`w-full py-2.5 rounded-xl font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 ${
-                      isSelected
-                        ? "bg-blue-600 text-white hover:bg-blue-700 shadow-sm"
-                        : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                    }`}
-                  >
-                    <span>Sign In as {role.title.split(" ")[0]}</span>
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
+                  {roleKey === "businessman" ? (
+                    <Link
+                      href="/trader"
+                      className="w-full py-2.5 rounded-xl font-bold text-xs bg-[#1A56DB] text-white hover:bg-blue-700 shadow-sm transition-colors flex items-center justify-center gap-1.5"
+                    >
+                      <span>Open Businessman Portal</span>
+                      <ChevronRight className="w-4 h-4" />
+                    </Link>
+                  ) : (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openLoginForRole(roleKey);
+                      }}
+                      className={`w-full py-2.5 rounded-xl font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 ${
+                        isSelected
+                          ? "bg-blue-600 text-white hover:bg-blue-700 shadow-sm"
+                          : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                      }`}
+                    >
+                      <span>Sign In as {role.title.split(" ")[0]}</span>
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
               );
             })}
@@ -644,7 +665,11 @@ export default function LandingPage() {
                   <form
                     onSubmit={(e) => {
                       e.preventDefault();
-                      alert(`Login submitted for ${activeRoleData.title}. (Prototype UI Mode)`);
+                      if (selectedRole === "businessman") {
+                        router.push("/trader");
+                      } else {
+                        alert(`Login submitted for ${activeRoleData.title}. (Prototype UI Mode)`);
+                      }
                     }}
                     className="space-y-4 text-left"
                   >
@@ -977,8 +1002,12 @@ export default function LandingPage() {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                alert(`Authenticated as ${roleDetails[selectedRole].title}. Entering portal dashboard...`);
                 setIsLoginModalOpen(false);
+                if (selectedRole === "businessman") {
+                  router.push("/trader");
+                } else {
+                  alert(`Authenticated as ${roleDetails[selectedRole].title}. Entering portal dashboard...`);
+                }
               }}
               className="space-y-4"
             >
