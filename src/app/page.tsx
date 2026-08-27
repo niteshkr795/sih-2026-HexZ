@@ -38,12 +38,21 @@ type RoleType = "businessman" | "lmo" | "gatc" | "admin";
 
 export default function LandingPage() {
   const router = useRouter();
+  const router = useRouter();
   const [selectedRole, setSelectedRole] = useState<RoleType>("businessman");
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResult, setSearchResult] = useState<any | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [activeTab, setActiveTab] = useState<"overview" | "features" | "lifecycle" | "standards">("overview");
+
+  const handleAuthenticate = (role: RoleType) => {
+    if (role === "lmo") {
+      router.push("/lmo");
+    } else {
+      alert(`Login submitted for ${roleDetails[role].title}. (Prototype UI Mode)`);
+    }
+  };
 
   // Sample mock passport data for instant public verification lookup demo
   const samplePassports: Record<string, any> = {
