@@ -104,7 +104,7 @@ export default function LandingPage() {
     } else if (role === "admin") {
       handleSetPortalView("admin");
     } else {
-      alert(`Login submitted for ${roleDetails[role].title}. (Prototype UI Mode)`);
+      console.error(`Login submitted for unknown role: ${String(role)}`);
     }
   };
 
