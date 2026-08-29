@@ -12,6 +12,7 @@ import {
   AlertTriangle,
   XCircle,
   QrCode,
+  Scan,
   Search,
   Building2,
   UserCheck,
@@ -33,7 +34,8 @@ import {
   Award,
   Globe,
   SlidersHorizontal,
-  ChevronDown
+  ChevronDown,
+  X
 } from "lucide-react";
 
 type RoleType = "businessman" | "lmo" | "gatc" | "admin";
@@ -42,18 +44,59 @@ export type PortalViewMode = "landing" | "trader" | "lmo";
 export default function LandingPage() {
   const router = useRouter();
   const [activePortalView, setActivePortalView] = useState<PortalViewMode>("landing");
+
+  // Sync state with URL so back button works correctly
+  React.useEffect(() => {
+    const handlePopState = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const portal = urlParams.get('portal');
+      if (portal === 'lmo' || portal === 'trader') {
+        setActivePortalView(portal as PortalViewMode);
+      } else {
+        setActivePortalView('landing');
+      }
+    };
+    
+    // Check initial URL on mount
+    handlePopState();
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const handleSetPortalView = (view: PortalViewMode) => {
+    const url = view === 'landing' ? window.location.pathname : `?portal=${view}`;
+    window.history.pushState({}, '', url);
+    setActivePortalView(view);
+  };
+
   const [selectedRole, setSelectedRole] = useState<RoleType>("businessman");
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResult, setSearchResult] = useState<any | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [activeTab, setActiveTab] = useState<"overview" | "features" | "lifecycle" | "standards">("overview");
+  const [isHighlightingVerify, setIsHighlightingVerify] = useState(false);
+
+  const triggerVerifyHighlight = () => {
+    handleSetPortalView("landing");
+    setIsHighlightingVerify(true);
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      (document.querySelector('input[placeholder*="Enter Instrument ID"]') as HTMLInputElement)?.focus();
+      
+      // Remove highlight after 2.5 seconds
+      setTimeout(() => {
+        setIsHighlightingVerify(false);
+      }, 2500);
+    }, 100);
+  };
 
   const handleAuthenticate = (role: RoleType) => {
     if (role === "lmo") {
-      setActivePortalView("lmo");
+      handleSetPortalView("lmo");
     } else if (role === "businessman") {
-      setActivePortalView("trader");
+      handleSetPortalView("trader");
     } else {
       alert(`Login submitted for ${roleDetails[role].title}. (Prototype UI Mode)`);
     }
@@ -249,15 +292,23 @@ export default function LandingPage() {
                 <span>🏠 Main Portal / Overview</span>
               </button>
               <button
-                onClick={() => setActivePortalView("lmo")}
+                onClick={() => handleSetPortalView("lmo")}
                 className="px-3 py-1.5 bg-emerald-800/90 hover:bg-emerald-700 text-emerald-100 rounded-lg text-xs font-semibold border border-emerald-600/50 transition-colors flex items-center gap-1.5 shadow-xs"
               >
                 <span>🛡️ Switch to LMO Inspector Suite</span>
               </button>
+              <button
+                onClick={triggerVerifyHighlight}
+                className="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-amber-950 rounded-lg text-xs font-extrabold border border-amber-600 transition-colors flex items-center gap-1.5 shadow-md relative overflow-hidden"
+              >
+                <span className="absolute inset-0 bg-white/20 animate-pulse pointer-events-none"></span>
+                <QrCode className="w-3.5 h-3.5 relative z-10" />
+                <span className="relative z-10">🔍 Public Verification</span>
+              </button>
             </div>
           </div>
         </div>
-        <TraderPortalView onBackToHome={() => setActivePortalView("landing")} />
+        <TraderPortalView onBackToHome={() => handleSetPortalView("landing")} />
       </div>
     );
   }
@@ -278,21 +329,29 @@ export default function LandingPage() {
             </div>
             <div className="flex items-center space-x-2">
               <button
-                onClick={() => setActivePortalView("landing")}
+                onClick={() => handleSetPortalView("landing")}
                 className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-lg text-xs font-semibold border border-slate-700 transition-colors flex items-center gap-1.5 shadow-xs"
               >
                 <span>🏠 Main Portal / Overview</span>
               </button>
               <button
-                onClick={() => setActivePortalView("trader")}
+                onClick={() => handleSetPortalView("trader")}
                 className="px-3 py-1.5 bg-blue-800/90 hover:bg-blue-700 text-blue-100 rounded-lg text-xs font-semibold border border-blue-600/50 transition-colors flex items-center gap-1.5 shadow-xs"
               >
                 <span>🏢 Switch to Trader Portal</span>
               </button>
+              <button
+                onClick={triggerVerifyHighlight}
+                className="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-amber-950 rounded-lg text-xs font-extrabold border border-amber-600 transition-colors flex items-center gap-1.5 shadow-md relative overflow-hidden"
+              >
+                <span className="absolute inset-0 bg-white/20 animate-pulse pointer-events-none"></span>
+                <QrCode className="w-3.5 h-3.5 relative z-10" />
+                <span className="relative z-10">🔍 Public Verification</span>
+              </button>
             </div>
           </div>
         </div>
-        <LmoDashboardView onBackToHome={() => setActivePortalView("landing")} />
+        <LmoDashboardView onBackToHome={() => handleSetPortalView("landing")} />
       </div>
     );
   }
@@ -354,23 +413,16 @@ export default function LandingPage() {
             <a href="#ecosystem" className="hover:text-blue-600 transition-colors">
               Ecosystem
             </a>
+            
             <button
-              onClick={() => setActivePortalView("trader")}
-              className="text-blue-600 hover:text-blue-700 font-bold transition-colors flex items-center gap-1"
+              onClick={triggerVerifyHighlight}
+              className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-amber-950 rounded-lg text-sm font-extrabold border border-amber-600 transition-colors flex items-center gap-1.5 shadow-md relative overflow-hidden"
             >
-              <Building2 className="w-4 h-4" />
-              <span>Trader Portal</span>
+              <span className="absolute inset-0 bg-white/20 animate-pulse pointer-events-none"></span>
+              <QrCode className="w-4 h-4 relative z-10" />
+              <span className="relative z-10">Public Verification</span>
             </button>
-            <button
-              onClick={() => setActivePortalView("lmo")}
-              className="text-emerald-600 hover:text-emerald-700 font-bold transition-colors flex items-center gap-1"
-            >
-              <Shield className="w-4 h-4" />
-              <span>LMO Portal</span>
-            </button>
-            <a href="#verification" className="hover:text-blue-600 transition-colors">
-              Public QR Verify
-            </a>
+
             <a href="#lifecycle" className="hover:text-blue-600 transition-colors">
               Lifecycle
             </a>
@@ -379,7 +431,7 @@ export default function LandingPage() {
           {/* Action CTAs */}
           <div className="flex items-center space-x-2 sm:space-x-3">
             <button
-              onClick={() => setActivePortalView("trader")}
+              onClick={() => handleSetPortalView("trader")}
               className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-200 shadow-2xs"
             >
               <Building2 className="w-4 h-4 text-blue-600" />
@@ -388,7 +440,7 @@ export default function LandingPage() {
             </button>
 
             <button
-              onClick={() => setActivePortalView("lmo")}
+              onClick={() => handleSetPortalView("lmo")}
               className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors border border-emerald-200 shadow-2xs"
             >
               <Shield className="w-4 h-4 text-emerald-600" />
@@ -427,99 +479,94 @@ export default function LandingPage() {
               tamper-proof QR certificates, and continuous lifecycle compliance monitoring.
             </p>
 
-            {/* Quick Public Verification Lookup Bar */}
-            <div className="bg-white p-3 rounded-2xl shadow-xl border border-slate-200/80 max-w-2xl mx-auto mb-6 text-left">
-              <div className="flex items-center justify-between px-2 pb-2 border-b border-slate-100 text-xs font-semibold text-slate-500">
-                <span className="flex items-center gap-1.5">
-                  <QrCode className="w-3.5 h-3.5 text-blue-600" />
-                  Instant Public Passport & Certificate Verification
-                </span>
-                <span className="text-[11px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded font-mono">
-                  No Login Required
-                </span>
-              </div>
-
-              <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-2 mt-2">
-                <div className="relative flex-1">
-                  <Search className="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Enter Instrument ID (e.g. IN-MET-2026-8941) or Certificate Code"
-                    className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all font-mono"
-                  />
+            {/* Verification & QR Scanner Area */}
+            <div className={`grid grid-cols-1 md:grid-cols-[1.5fr_1fr] gap-4 max-w-4xl mx-auto mb-6 text-left items-stretch transition-all duration-500 rounded-3xl p-3 -mx-3 ${isHighlightingVerify ? 'ring-4 ring-amber-400 bg-amber-50/50 shadow-2xl shadow-amber-200/50 scale-[1.02] z-10 relative' : ''}`}>
+              
+              {/* Quick Public Verification Lookup Bar */}
+              <div className="bg-white p-3 rounded-2xl shadow-xl border border-slate-200/80 flex flex-col h-full">
+                <div className="flex items-center justify-between px-2 pb-2 border-b border-slate-100 text-xs font-semibold text-slate-500">
+                  <span className="flex items-center gap-1.5">
+                    <QrCode className="w-3.5 h-3.5 text-blue-600" />
+                    Instant Public Passport & Certificate Verification
+                  </span>
+                  <span className="text-[11px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded font-mono">
+                    No Login Required
+                  </span>
                 </div>
-                <button
-                  type="submit"
-                  disabled={isSearching}
-                  className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"
-                >
-                  {isSearching ? (
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  ) : (
-                    <>
-                      <span>Verify Now</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </>
-                  )}
-                </button>
-              </form>
 
-              {/* Sample quick tokens for convenience */}
-              <div className="flex flex-wrap items-center gap-2 mt-3 pt-2 text-xs text-slate-500">
-                <span className="font-medium">Try Sample Passport:</span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSearchQuery("IN-MET-2026-8941");
-                    setSearchResult(samplePassports["IN-MET-2026-8941"]);
-                  }}
-                  className="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono text-[11px] border border-slate-200 transition-colors"
-                >
-                  IN-MET-2026-8941 (Valid)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSearchQuery("IN-MET-2025-1049");
-                    setSearchResult(samplePassports["IN-MET-2025-1049"]);
-                  }}
-                  className="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono text-[11px] border border-slate-200 transition-colors"
-                >
-                  IN-MET-2025-1049 (Expired)
-                </button>
+                <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-2 mt-2">
+                  <div className="relative flex-1">
+                    <Search className="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Enter Instrument ID (e.g. IN-MET-2026-8941) or Certificate Code"
+                      className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all font-mono"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={isSearching}
+                    className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"
+                  >
+                    {isSearching ? (
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <>
+                        <span>Verify Now</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
+                </form>
+
+                {/* Sample quick tokens for convenience */}
+                <div className="flex flex-wrap items-center gap-2 mt-3 pt-2 text-xs text-slate-500">
+                  <span className="font-medium">Try Sample Passport:</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSearchQuery("IN-MET-2026-8941");
+                      setSearchResult(samplePassports["IN-MET-2026-8941"]);
+                    }}
+                    className="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono text-[11px] border border-slate-200 transition-colors"
+                  >
+                    IN-MET-2026-8941 (Valid)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSearchQuery("IN-MET-2025-1049");
+                      setSearchResult(samplePassports["IN-MET-2025-1049"]);
+                    }}
+                    className="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono text-[11px] border border-slate-200 transition-colors"
+                  >
+                    IN-MET-2025-1049 (Expired)
+                  </button>
+                </div>
               </div>
+
+              {/* QR Scanner Action Box */}
+              <button
+                onClick={() => alert("QR Scanner camera interface will be implemented in the backend integration phase.")}
+                className="bg-white p-5 rounded-2xl shadow-xl border border-slate-200/80 flex flex-col items-center justify-center text-center group cursor-pointer hover:border-amber-400 hover:ring-2 hover:ring-amber-200 hover:-translate-y-1 transition-all h-full"
+              >
+                <div className="w-16 h-16 bg-amber-50 rounded-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-sm border border-amber-100">
+                  <Scan className="w-8 h-8 text-amber-600" />
+                </div>
+                <h3 className="font-extrabold text-slate-900 mb-1 text-base">Scan QR Code</h3>
+                <p className="text-xs text-slate-500 font-medium px-2 leading-relaxed">
+                  Open your camera to scan a physical instrument QR tag for instant, secure verification.
+                </p>
+                <div className="mt-auto pt-4 w-full">
+                  <div className="px-4 py-2.5 bg-slate-900 text-white text-xs font-bold rounded-xl shadow-md group-hover:bg-amber-500 transition-colors w-full flex justify-center items-center gap-1.5">
+                    <Scan className="w-4 h-4" /> Open Scanner
+                  </div>
+                </div>
+              </button>
             </div>
 
-            {/* Quick Portal Switcher Pills */}
-            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs text-slate-600">
-              <span className="font-semibold text-slate-700 mr-1">Direct Stakeholder Portals:</span>
-              <button
-                onClick={() => setActivePortalView("trader")}
-                className="px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 shadow-sm font-bold transition-all flex items-center gap-1 cursor-pointer"
-              >
-                🏢 Business / Trader Portal →
-              </button>
-              <button
-                onClick={() => setActivePortalView("lmo")}
-                className="px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 shadow-sm font-bold transition-all flex items-center gap-1 cursor-pointer"
-              >
-                🛡️ LMO Field Inspector →
-              </button>
-              <button
-                onClick={() => openLoginForRole("gatc")}
-                className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-amber-500 hover:text-amber-600 shadow-sm font-medium transition-all"
-              >
-                ⚖️ GATC Testing Lab
-              </button>
-              <button
-                onClick={() => openLoginForRole("admin")}
-                className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-indigo-500 hover:text-indigo-600 shadow-sm font-medium transition-all"
-              >
-                📊 Central Admin
-              </button>
-            </div>
           </div>
         </div>
       </section>
@@ -641,7 +688,7 @@ export default function LandingPage() {
               return (
                 <div
                   key={roleKey}
-                  onClick={() => setSelectedRole(roleKey)}
+                  onClick={() => openLoginForRole(roleKey as RoleType)}
                   className={`cursor-pointer rounded-2xl p-6 transition-all border-2 text-left relative flex flex-col justify-between ${
                     isSelected
                       ? "border-blue-600 bg-blue-50/40 shadow-lg ring-2 ring-blue-600/20"
@@ -679,22 +726,22 @@ export default function LandingPage() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        setActivePortalView("trader");
+                        openLoginForRole("businessman");
                       }}
                       className="w-full py-2.5 rounded-xl font-bold text-xs bg-[#1A56DB] text-white hover:bg-blue-700 shadow-sm transition-colors flex items-center justify-center gap-1.5"
                     >
-                      <span>Open Businessman Portal</span>
+                      <span>Sign In as Businessman</span>
                       <ChevronRight className="w-4 h-4" />
                     </button>
                   ) : roleKey === "lmo" ? (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        setActivePortalView("lmo");
+                        openLoginForRole("lmo");
                       }}
                       className="w-full py-2.5 rounded-xl font-bold text-xs bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm transition-colors flex items-center justify-center gap-1.5"
                     >
-                      <span>Open LMO Officer Suite</span>
+                      <span>Sign In as LMO</span>
                       <ChevronRight className="w-4 h-4" />
                     </button>
                   ) : (
@@ -718,136 +765,162 @@ export default function LandingPage() {
             })}
           </div>
 
-          {/* Interactive Role Login Preview Pane */}
-          <div className="bg-slate-50 rounded-3xl p-6 sm:p-10 border border-slate-200 shadow-sm">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-              {/* Left Column: Role Details & Permissions */}
-              <div className="lg:col-span-7 space-y-6">
-                <div className="flex items-center gap-3">
-                  <div className={`p-3 rounded-2xl ${activeRoleData.accentBg}`}>
-                    <ActiveRoleIcon className={`w-8 h-8 ${activeRoleData.color}`} />
-                  </div>
-                  <div>
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                      Active Portal Selected
-                    </span>
-                    <h3 className="text-2xl font-extrabold text-slate-900">{activeRoleData.title}</h3>
-                  </div>
-                </div>
+          {/* Interactive Role Login Preview Pane MODAL */}
+          {isLoginModalOpen && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+              <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setIsLoginModalOpen(false)}></div>
+              
+              <div className="bg-slate-50 rounded-3xl p-6 sm:p-10 border border-slate-200 shadow-2xl relative max-w-5xl w-full max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
+                <button
+                  onClick={() => setIsLoginModalOpen(false)}
+                  className="absolute top-4 right-4 p-2 bg-slate-200 hover:bg-red-100 hover:text-red-600 text-slate-700 rounded-full transition-colors z-10 shadow-sm"
+                >
+                  <X className="w-5 h-5" />
+                </button>
 
-                <p className="text-sm text-slate-600 leading-relaxed">
-                  {activeRoleData.description}
-                </p>
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                  {/* Left Column: Role Details & Permissions */}
+                  <div className="lg:col-span-7 space-y-6">
+                    <div className="flex items-center gap-3">
+                      <div className={`p-3 rounded-2xl ${activeRoleData.accentBg}`}>
+                        <ActiveRoleIcon className={`w-8 h-8 ${activeRoleData.color}`} />
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                          Active Portal Selected
+                        </span>
+                        <h3 className="text-2xl font-extrabold text-slate-900">{activeRoleData.title}</h3>
+                      </div>
+                    </div>
 
-                <div className="space-y-2.5">
-                  <span className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
-                    Key Role Capabilities & Workflows:
-                  </span>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                    {activeRoleData.capabilities.map((cap, idx) => (
-                      <div
-                        key={idx}
-                        className="flex items-start gap-2 bg-white p-3 rounded-xl border border-slate-200/80 text-slate-700 font-medium"
+                    <p className="text-sm text-slate-600 leading-relaxed">
+                      {activeRoleData.description}
+                    </p>
+
+                    {/* Security Prototype Warning */}
+                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3 mt-4">
+                      <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                      <div>
+                        <h4 className="text-sm font-semibold text-amber-800">Prototype Authentication</h4>
+                        <p className="text-xs text-amber-700 mt-1 leading-relaxed">
+                          This is a frontend UI prototype. Login credentials are not securely verified. 
+                          <strong className="block mt-1">Pending: Supabase PostgreSQL integration for secure authentication and Row Level Security (RLS).</strong>
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2.5">
+                      <span className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
+                        Key Role Capabilities & Workflows:
+                      </span>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                        {activeRoleData.capabilities.map((cap, idx) => (
+                          <div
+                            key={idx}
+                            className="flex items-start gap-2 bg-white p-3 rounded-xl border border-slate-200/80 text-slate-700 font-medium"
+                          >
+                            <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                            <span>{cap}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column: Interactive Login UI Form */}
+                  <div className="lg:col-span-5">
+                    <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-lg">
+                      <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
+                        <div>
+                          <h4 className="font-bold text-slate-900 text-base">Stakeholder Portal Sign In</h4>
+                          <p className="text-xs text-slate-500">SIH 26036 Single Sign-On Access</p>
+                        </div>
+                        <span className="text-[10px] font-bold px-2 py-1 bg-slate-100 text-slate-700 rounded-md">
+                          {selectedRole.toUpperCase()}
+                        </span>
+                      </div>
+
+                      <form
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          setIsLoginModalOpen(false);
+                          if (selectedRole === "businessman") {
+                            handleSetPortalView("trader");
+                          } else if (selectedRole === "lmo") {
+                            handleSetPortalView("lmo");
+                          } else {
+                            alert(`Login submitted for ${activeRoleData.title}. (Prototype UI Mode)`);
+                          }
+                        }}
+                        className="space-y-4 text-left"
                       >
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
-                        <span>{cap}</span>
-                      </div>
-                    ))}
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                            {activeRoleData.sampleIdLabel} or Official Email
+                          </label>
+                          <div className="relative">
+                            <input
+                              type="text"
+                              defaultValue={activeRoleData.sampleEmail}
+                              className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent font-mono text-xs"
+                              placeholder="e.g. user@organization.gov.in"
+                              required
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <div className="flex items-center justify-between mb-1.5">
+                            <label className="block text-xs font-semibold text-slate-700">
+                              Password / Security PIN
+                            </label>
+                            <a href="#" className="text-[11px] font-semibold text-blue-600 hover:underline">
+                              Forgot?
+                            </a>
+                          </div>
+                          <input
+                            type="password"
+                            defaultValue="••••••••••••"
+                            className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                            required
+                          />
+                        </div>
+
+                        <div className="flex items-center justify-between text-xs text-slate-600 pt-1">
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              defaultChecked
+                              className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                            />
+                            <span>Remember credentials</span>
+                          </label>
+                          <span className="text-[11px] text-slate-400 font-mono">2FA / OTP Enabled</span>
+                        </div>
+
+                        <button
+                          type="submit"
+                          className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
+                        >
+                          <Lock className="w-4 h-4" />
+                          <span>Authenticate & Open Workspace</span>
+                        </button>
+
+                        <div className="text-center pt-2">
+                          <p className="text-[11px] text-slate-500">
+                            Need registration or test certificate assistance?{" "}
+                            <a href="#help" className="text-blue-600 font-semibold hover:underline">
+                              Contact Helpdesk
+                            </a>
+                          </p>
+                        </div>
+                      </form>
+                    </div>
                   </div>
-                </div>
-              </div>
-
-              {/* Right Column: Interactive Login UI Form */}
-              <div className="lg:col-span-5">
-                <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-lg">
-                  <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
-                    <div>
-                      <h4 className="font-bold text-slate-900 text-base">Stakeholder Portal Sign In</h4>
-                      <p className="text-xs text-slate-500">SIH 26036 Single Sign-On Access</p>
-                    </div>
-                    <span className="text-[10px] font-bold px-2 py-1 bg-slate-100 text-slate-700 rounded-md">
-                      {selectedRole.toUpperCase()}
-                    </span>
-                  </div>
-
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      if (selectedRole === "businessman") {
-                        setActivePortalView("trader");
-                      } else if (selectedRole === "lmo") {
-                        setActivePortalView("lmo");
-                      } else {
-                        alert(`Login submitted for ${activeRoleData.title}. (Prototype UI Mode)`);
-                      }
-                    }}
-                    className="space-y-4 text-left"
-                  >
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                        {activeRoleData.sampleIdLabel} or Official Email
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          defaultValue={activeRoleData.sampleEmail}
-                          className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent font-mono text-xs"
-                          placeholder="e.g. user@organization.gov.in"
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className="flex items-center justify-between mb-1.5">
-                        <label className="block text-xs font-semibold text-slate-700">
-                          Password / Security PIN
-                        </label>
-                        <a href="#" className="text-[11px] font-semibold text-blue-600 hover:underline">
-                          Forgot?
-                        </a>
-                      </div>
-                      <input
-                        type="password"
-                        defaultValue="••••••••••••"
-                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                        required
-                      />
-                    </div>
-
-                    <div className="flex items-center justify-between text-xs text-slate-600 pt-1">
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          defaultChecked
-                          className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                        />
-                        <span>Remember credentials</span>
-                      </label>
-                      <span className="text-[11px] text-slate-400 font-mono">2FA / OTP Enabled</span>
-                    </div>
-
-                    <button
-                      type="submit"
-                      className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
-                    >
-                      <Lock className="w-4 h-4" />
-                      <span>Authenticate & Open Workspace</span>
-                    </button>
-
-                    <div className="text-center pt-2">
-                      <p className="text-[11px] text-slate-500">
-                        Need registration or test certificate assistance?{" "}
-                        <a href="#help" className="text-blue-600 font-semibold hover:underline">
-                          Contact Helpdesk
-                        </a>
-                      </p>
-                    </div>
-                  </form>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </section>
 
@@ -862,7 +935,7 @@ export default function LandingPage() {
               The Digital Instrument Passport Lifecycle
             </h2>
             <p className="text-slate-400 mt-3 text-base">
-              One Instrument → One Digital Passport → Multi-Verification History → Trusted e-Certificate → Public Verification
+              One Instrument → One Digital Passport → Multi-Verification History → Trusted e-Certificate → <span className="whitespace-nowrap">Public Verification</span>
             </p>
           </div>
 
@@ -1114,9 +1187,9 @@ export default function LandingPage() {
                 e.preventDefault();
                 setIsLoginModalOpen(false);
                 if (selectedRole === "businessman") {
-                  setActivePortalView("trader");
+                  handleSetPortalView("trader");
                 } else if (selectedRole === "lmo") {
-                  setActivePortalView("lmo");
+                  handleSetPortalView("lmo");
                 } else {
                   alert(`Authenticated as ${roleDetails[selectedRole].title}. Entering portal dashboard...`);
                 }
@@ -1189,12 +1262,12 @@ export default function LandingPage() {
               </h4>
               <ul className="space-y-2 text-xs">
                 <li>
-                  <button onClick={() => setActivePortalView("trader")} className="hover:text-white text-left">
+                  <button onClick={() => handleSetPortalView("trader")} className="hover:text-white text-left">
                     Businessman & Trader Portal
                   </button>
                 </li>
                 <li>
-                  <button onClick={() => setActivePortalView("lmo")} className="hover:text-white text-left">
+                  <button onClick={() => handleSetPortalView("lmo")} className="hover:text-white text-left">
                     Legal Metrology Officer (LMO)
                   </button>
                 </li>
