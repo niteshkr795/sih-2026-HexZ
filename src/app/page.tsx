@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { TraderPortalView } from "@/components/trader/TraderPortalView";
+import { LmoDashboardView } from "@/components/lmo/LmoDashboardView";
 import {
   Shield,
   CheckCircle2,
@@ -35,10 +37,11 @@ import {
 } from "lucide-react";
 
 type RoleType = "businessman" | "lmo" | "gatc" | "admin";
+export type PortalViewMode = "landing" | "trader" | "lmo";
 
 export default function LandingPage() {
   const router = useRouter();
-  const router = useRouter();
+  const [activePortalView, setActivePortalView] = useState<PortalViewMode>("landing");
   const [selectedRole, setSelectedRole] = useState<RoleType>("businessman");
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -48,7 +51,9 @@ export default function LandingPage() {
 
   const handleAuthenticate = (role: RoleType) => {
     if (role === "lmo") {
-      router.push("/lmo");
+      setActivePortalView("lmo");
+    } else if (role === "businessman") {
+      setActivePortalView("trader");
     } else {
       alert(`Login submitted for ${roleDetails[role].title}. (Prototype UI Mode)`);
     }
@@ -222,6 +227,76 @@ export default function LandingPage() {
   const activeRoleData = roleDetails[selectedRole];
   const ActiveRoleIcon = activeRoleData.icon;
 
+  if (activePortalView === "trader") {
+    return (
+      <div className="min-h-screen flex flex-col bg-[#F9FAFB]">
+        {/* Unified EcoSystem Switcher Bar */}
+        <div className="bg-slate-950 text-white px-4 py-2.5 border-b border-slate-800 sticky top-0 z-50 shadow-md">
+          <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs">
+            <div className="flex items-center space-x-2.5">
+              <span className="bg-blue-600 text-white font-mono font-bold text-[10px] px-2 py-0.5 rounded uppercase tracking-wider">
+                DigiPass Ecosystem
+              </span>
+              <span className="text-slate-300 font-semibold hidden sm:inline">
+                Active View: <strong className="text-white">Businessman & Trader Portal</strong>
+              </span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setActivePortalView("landing")}
+                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-lg text-xs font-semibold border border-slate-700 transition-colors flex items-center gap-1.5 shadow-xs"
+              >
+                <span>🏠 Main Portal / Overview</span>
+              </button>
+              <button
+                onClick={() => setActivePortalView("lmo")}
+                className="px-3 py-1.5 bg-emerald-800/90 hover:bg-emerald-700 text-emerald-100 rounded-lg text-xs font-semibold border border-emerald-600/50 transition-colors flex items-center gap-1.5 shadow-xs"
+              >
+                <span>🛡️ Switch to LMO Inspector Suite</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <TraderPortalView onBackToHome={() => setActivePortalView("landing")} />
+      </div>
+    );
+  }
+
+  if (activePortalView === "lmo") {
+    return (
+      <div className="min-h-screen flex flex-col bg-[#F8FAFC]">
+        {/* Unified EcoSystem Switcher Bar */}
+        <div className="bg-slate-950 text-white px-4 py-2.5 border-b border-slate-800 sticky top-0 z-50 shadow-md">
+          <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs">
+            <div className="flex items-center space-x-2.5">
+              <span className="bg-emerald-600 text-white font-mono font-bold text-[10px] px-2 py-0.5 rounded uppercase tracking-wider">
+                DigiPass Ecosystem
+              </span>
+              <span className="text-slate-300 font-semibold hidden sm:inline">
+                Active View: <strong className="text-white">Legal Metrology Officer (LMO) Suite</strong>
+              </span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setActivePortalView("landing")}
+                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-lg text-xs font-semibold border border-slate-700 transition-colors flex items-center gap-1.5 shadow-xs"
+              >
+                <span>🏠 Main Portal / Overview</span>
+              </button>
+              <button
+                onClick={() => setActivePortalView("trader")}
+                className="px-3 py-1.5 bg-blue-800/90 hover:bg-blue-700 text-blue-100 rounded-lg text-xs font-semibold border border-blue-600/50 transition-colors flex items-center gap-1.5 shadow-xs"
+              >
+                <span>🏢 Switch to Trader Portal</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <LmoDashboardView onBackToHome={() => setActivePortalView("landing")} />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-[#F9FAFB] text-slate-900 selection:bg-blue-600 selection:text-white">
       {/* Top Advisory Banner */}
@@ -275,48 +350,58 @@ export default function LandingPage() {
           </div>
 
           {/* Center Navigation Links */}
-          <nav className="hidden lg:flex items-center space-x-8 text-sm font-medium text-slate-600">
+          <nav className="hidden lg:flex items-center space-x-6 text-sm font-medium text-slate-600">
             <a href="#ecosystem" className="hover:text-blue-600 transition-colors">
               Ecosystem
             </a>
-            <a href="#portals" className="hover:text-blue-600 transition-colors">
-              Stakeholder Portals
-            </a>
+            <button
+              onClick={() => setActivePortalView("trader")}
+              className="text-blue-600 hover:text-blue-700 font-bold transition-colors flex items-center gap-1"
+            >
+              <Building2 className="w-4 h-4" />
+              <span>Trader Portal</span>
+            </button>
+            <button
+              onClick={() => setActivePortalView("lmo")}
+              className="text-emerald-600 hover:text-emerald-700 font-bold transition-colors flex items-center gap-1"
+            >
+              <Shield className="w-4 h-4" />
+              <span>LMO Portal</span>
+            </button>
             <a href="#verification" className="hover:text-blue-600 transition-colors">
               Public QR Verify
             </a>
             <a href="#lifecycle" className="hover:text-blue-600 transition-colors">
-              Passport Lifecycle
-            </a>
-            <a href="#standards" className="hover:text-blue-600 transition-colors">
-              Compliance Norms
+              Lifecycle
             </a>
           </nav>
 
           {/* Action CTAs */}
-          <div className="flex items-center space-x-3">
-            <Link
-              href="/trader"
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-200"
+          <div className="flex items-center space-x-2 sm:space-x-3">
+            <button
+              onClick={() => setActivePortalView("trader")}
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-200 shadow-2xs"
             >
               <Building2 className="w-4 h-4 text-blue-600" />
-              <span>Trader Portal</span>
-            </Link>
+              <span className="hidden sm:inline">Trader Portal</span>
+              <span className="sm:hidden">Trader</span>
+            </button>
 
-            <a
-              href="#verification"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors border border-slate-200"
+            <button
+              onClick={() => setActivePortalView("lmo")}
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors border border-emerald-200 shadow-2xs"
             >
-              <QrCode className="w-4 h-4 text-emerald-600" />
-              Quick Verify
-            </a>
+              <Shield className="w-4 h-4 text-emerald-600" />
+              <span className="hidden sm:inline">LMO Suite</span>
+              <span className="sm:hidden">LMO</span>
+            </button>
 
             <button
               onClick={() => setIsLoginModalOpen(true)}
-              className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 rounded-lg shadow-sm hover:shadow transition-all"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 rounded-lg shadow-sm hover:shadow transition-all"
             >
-              <Lock className="w-4 h-4" />
-              Stakeholder Login
+              <Lock className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Sign In</span>
             </button>
           </div>
         </div>
@@ -410,17 +495,17 @@ export default function LandingPage() {
             {/* Quick Portal Switcher Pills */}
             <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs text-slate-600">
               <span className="font-semibold text-slate-700 mr-1">Direct Stakeholder Portals:</span>
-              <Link
-                href="/trader"
-                className="px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 shadow-sm font-bold transition-all flex items-center gap-1"
+              <button
+                onClick={() => setActivePortalView("trader")}
+                className="px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 shadow-sm font-bold transition-all flex items-center gap-1 cursor-pointer"
               >
                 🏢 Business / Trader Portal →
-              </Link>
+              </button>
               <button
-                onClick={() => openLoginForRole("lmo")}
-                className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-emerald-500 hover:text-emerald-600 shadow-sm font-medium transition-all"
+                onClick={() => setActivePortalView("lmo")}
+                className="px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 shadow-sm font-bold transition-all flex items-center gap-1 cursor-pointer"
               >
-                🛡️ LMO Field Inspector
+                🛡️ LMO Field Inspector →
               </button>
               <button
                 onClick={() => openLoginForRole("gatc")}
@@ -591,13 +676,27 @@ export default function LandingPage() {
                   </div>
 
                   {roleKey === "businessman" ? (
-                    <Link
-                      href="/trader"
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActivePortalView("trader");
+                      }}
                       className="w-full py-2.5 rounded-xl font-bold text-xs bg-[#1A56DB] text-white hover:bg-blue-700 shadow-sm transition-colors flex items-center justify-center gap-1.5"
                     >
                       <span>Open Businessman Portal</span>
                       <ChevronRight className="w-4 h-4" />
-                    </Link>
+                    </button>
+                  ) : roleKey === "lmo" ? (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActivePortalView("lmo");
+                      }}
+                      className="w-full py-2.5 rounded-xl font-bold text-xs bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm transition-colors flex items-center justify-center gap-1.5"
+                    >
+                      <span>Open LMO Officer Suite</span>
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
                   ) : (
                     <button
                       onClick={(e) => {
@@ -675,7 +774,9 @@ export default function LandingPage() {
                     onSubmit={(e) => {
                       e.preventDefault();
                       if (selectedRole === "businessman") {
-                        router.push("/trader");
+                        setActivePortalView("trader");
+                      } else if (selectedRole === "lmo") {
+                        setActivePortalView("lmo");
                       } else {
                         alert(`Login submitted for ${activeRoleData.title}. (Prototype UI Mode)`);
                       }
@@ -1013,7 +1114,9 @@ export default function LandingPage() {
                 e.preventDefault();
                 setIsLoginModalOpen(false);
                 if (selectedRole === "businessman") {
-                  router.push("/trader");
+                  setActivePortalView("trader");
+                } else if (selectedRole === "lmo") {
+                  setActivePortalView("lmo");
                 } else {
                   alert(`Authenticated as ${roleDetails[selectedRole].title}. Entering portal dashboard...`);
                 }
@@ -1086,12 +1189,12 @@ export default function LandingPage() {
               </h4>
               <ul className="space-y-2 text-xs">
                 <li>
-                  <button onClick={() => openLoginForRole("businessman")} className="hover:text-white">
+                  <button onClick={() => setActivePortalView("trader")} className="hover:text-white text-left">
                     Businessman & Trader Portal
                   </button>
                 </li>
                 <li>
-                  <button onClick={() => openLoginForRole("lmo")} className="hover:text-white">
+                  <button onClick={() => setActivePortalView("lmo")} className="hover:text-white text-left">
                     Legal Metrology Officer (LMO)
                   </button>
                 </li>

@@ -16,9 +16,10 @@ import { OfficerProfile } from "@/types/lmo";
 
 interface LmoHeaderProps {
   officer: OfficerProfile;
+  onBackToHome?: () => void;
 }
 
-export const LmoHeader: React.FC<LmoHeaderProps> = ({ officer }) => {
+export const LmoHeader: React.FC<LmoHeaderProps> = ({ officer, onBackToHome }) => {
   return (
     <header className="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-40 shadow-lg">
       {/* Top Officer Status Bar */}
@@ -99,13 +100,23 @@ export const LmoHeader: React.FC<LmoHeaderProps> = ({ officer }) => {
             </span>
           </div>
 
-          <Link
-            href="/"
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-red-950/50 text-slate-300 hover:text-red-300 border border-slate-700 hover:border-red-800/50 text-xs font-semibold transition-all"
-          >
-            <LogOut className="w-3.5 h-3.5" />
-            <span>Exit Portal</span>
-          </Link>
+          {onBackToHome ? (
+            <button
+              onClick={onBackToHome}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-blue-950/50 text-slate-300 hover:text-blue-300 border border-slate-700 hover:border-blue-800/50 text-xs font-semibold transition-all"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Back to Main Dashboard</span>
+            </button>
+          ) : (
+            <Link
+              href="/"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-red-950/50 text-slate-300 hover:text-red-300 border border-slate-700 hover:border-red-800/50 text-xs font-semibold transition-all"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Exit Portal</span>
+            </Link>
+          )}
         </div>
       </div>
     </header>
