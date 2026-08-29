@@ -8,117 +8,144 @@ import {
   MapPin, 
   Wifi, 
   Clock, 
-  LogOut, 
   Award,
-  BellRing
+  BellRing,
+  ClipboardList,
+  ScanSearch,
+  FileCheck2,
+  BarChart3,
+  UserCheck,
 } from "lucide-react";
 import { OfficerProfile } from "@/types/lmo";
+import { LmoTabType } from "@/components/lmo/LmoNavTabs";
 
 interface LmoHeaderProps {
   officer: OfficerProfile;
+  activeTab: LmoTabType;
+  onTabChange: (tab: LmoTabType) => void;
   onBackToHome?: () => void;
+  pendingCount: number;
 }
 
-export const LmoHeader: React.FC<LmoHeaderProps> = ({ officer, onBackToHome }) => {
+export const LmoHeader: React.FC<LmoHeaderProps> = ({
+  officer,
+  activeTab,
+  onTabChange,
+  onBackToHome,
+  pendingCount,
+}) => {
+  const tabs: { id: LmoTabType; label: string; icon: any; badge?: string | null }[] = [
+    { id: "queue", label: "Queue", icon: ClipboardList, badge: pendingCount > 0 ? `${pendingCount}` : null },
+    { id: "wizard", label: "Field Wizard", icon: ScanSearch },
+    { id: "ledger", label: "Cert Ledger", icon: FileCheck2 },
+    { id: "analytics", label: "Analytics", icon: BarChart3 },
+    { id: "profile", label: "Profile", icon: UserCheck },
+  ];
+
   return (
-    <header className="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-40 shadow-lg">
-      {/* Top Officer Status Bar */}
-      <div className="bg-slate-950 px-4 py-1.5 border-b border-slate-800/80 text-xs">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center space-x-3">
-            <span className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-mono text-[11px] border border-emerald-500/30">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              {officer.syncStatus === "ONLINE_SYNCED" ? "OFFICER SUITE ONLINE • ENCRYPTED TLS" : "OFFLINE SQLITE CACHE"}
-            </span>
-            <span className="text-slate-400 hidden sm:inline">•</span>
-            <span className="text-slate-300 text-[11px] hidden sm:flex items-center gap-1">
-              <MapPin className="w-3 h-3 text-blue-400" />
-              {officer.zone}, {officer.state}
-            </span>
-          </div>
-
-          <div className="flex items-center space-x-4 text-[11px] text-slate-400">
-            <span className="flex items-center gap-1 text-slate-300 font-mono">
-              <Clock className="w-3.5 h-3.5 text-slate-400" />
-              Field Shift: 09:00 - 18:00 IST
-            </span>
-            <span className="hidden md:inline text-slate-600">|</span>
-            <span className="hidden md:flex items-center gap-1 text-emerald-400">
-              <Wifi className="w-3.5 h-3.5" /> 4G LTE Active
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Main LMO Identity Navigation Bar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
-        {/* Left: Department & Officer Profile */}
-        <div className="flex items-center space-x-4">
-          <div className="relative w-11 h-11 rounded-xl overflow-hidden bg-white p-0.5 border border-slate-700 shadow-sm flex-shrink-0">
-            <Image
-              src="/logo.jpg"
-              alt="Legal Metrology Emblem"
-              fill
-              className="object-contain"
-              priority
-            />
+    <>
+      {/* Top Sticky Header */}
+      <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200 px-4 sm:px-8 py-3 flex items-center justify-between transition-all shadow-2xs">
+        {/* Left: Mobile Brand & Officer Name */}
+        <div className="flex items-center gap-3">
+          <div className="md:hidden flex items-center gap-2">
+            {onBackToHome ? (
+              <button
+                onClick={onBackToHome}
+                className="relative w-8 h-8 rounded-lg overflow-hidden border border-slate-200 shrink-0"
+              >
+                <Image src="/logo.jpg" alt="DigiPass" fill className="object-contain" />
+              </button>
+            ) : (
+              <Link href="/" className="relative w-8 h-8 rounded-lg overflow-hidden border border-slate-200 shrink-0">
+                <Image src="/logo.jpg" alt="DigiPass" fill className="object-contain" />
+              </Link>
+            )}
           </div>
 
           <div>
-            <div className="flex items-center space-x-2">
-              <h1 className="font-extrabold text-lg text-white tracking-tight">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className="font-extrabold text-base sm:text-lg text-slate-950 tracking-tight">
                 {officer.name}
               </h1>
-              <span className="text-[10px] font-mono font-bold bg-blue-600/30 text-blue-400 border border-blue-500/40 px-2 py-0.5 rounded-full">
-                {officer.id}
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                {officer.syncStatus === "ONLINE_SYNCED" ? "TLS Online" : "Cached"}
               </span>
             </div>
-            <p className="text-xs text-slate-400 font-medium">
-              {officer.designation} • Badge: <span className="font-mono text-slate-300">{officer.badgeNumber}</span>
+            <p className="text-xs text-slate-500 font-mono hidden sm:block">
+              {officer.designation} • ID: {officer.id} • {officer.zone}, {officer.state}
             </p>
           </div>
         </div>
 
-        {/* Right: Quick Officer Actions & Logout */}
-        <div className="flex items-center space-x-3">
-          <div className="hidden lg:flex items-center space-x-2 bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-700/80 text-xs">
-            <Award className="w-4 h-4 text-amber-400" />
-            <span className="text-slate-300">
-              Monthly Compliance: <strong className="text-emerald-400 font-mono">{officer.complianceRate}%</strong> ({officer.totalInspectionsThisMonth} Done)
+        {/* Right: Quick KPI, Shift & Alerts */}
+        <div className="flex items-center gap-2.5 sm:gap-4">
+          <div className="hidden xl:flex items-center space-x-3 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 text-xs">
+            <div className="flex items-center gap-1 text-slate-600">
+              <Clock className="w-3.5 h-3.5 text-slate-400" />
+              <span className="font-mono">Shift: 09:00-18:00</span>
+            </div>
+            <div className="w-px h-3.5 bg-slate-200" />
+            <div className="flex items-center gap-1 text-emerald-700 font-medium">
+              <Wifi className="w-3.5 h-3.5 text-emerald-600" /> 4G Active
+            </div>
+          </div>
+
+          <div className="hidden lg:flex items-center space-x-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 text-xs">
+            <Award className="w-4 h-4 text-amber-500" />
+            <span className="text-slate-600">
+              Compliance: <strong className="text-emerald-700 font-mono">{officer.complianceRate}%</strong>
             </span>
           </div>
 
           <div className="relative">
             <button 
-              title="Notifications" 
-              className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition-colors"
+              title="Pending tasks" 
+              onClick={() => onTabChange("queue")}
+              className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
             >
-              <BellRing className="w-4 h-4 text-blue-400" />
+              <BellRing className="w-4 h-4 text-blue-600" />
             </button>
-            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-[10px] font-bold flex items-center justify-center text-white">
-              {officer.pendingQueueCount}
-            </span>
+            {pendingCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-blue-600 text-[10px] font-bold flex items-center justify-center text-white">
+                {pendingCount}
+              </span>
+            )}
           </div>
-
-          {onBackToHome ? (
-            <button
-              onClick={onBackToHome}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-blue-950/50 text-slate-300 hover:text-blue-300 border border-slate-700 hover:border-blue-800/50 text-xs font-semibold transition-all"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              <span>Back to Main Dashboard</span>
-            </button>
-          ) : (
-            <Link
-              href="/"
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-red-950/50 text-slate-300 hover:text-red-300 border border-slate-700 hover:border-red-800/50 text-xs font-semibold transition-all"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              <span>Exit Portal</span>
-            </Link>
-          )}
         </div>
+      </header>
+
+      {/* Mobile Navigation Tabs (visible only on small screens < md) */}
+      <div className="md:hidden flex items-center overflow-x-auto bg-white border-b border-slate-200 px-4 py-2 gap-1.5 scrollbar-none text-xs">
+        {tabs.map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => onTabChange(tab.id)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg whitespace-nowrap font-semibold transition-all ${
+                isActive
+                  ? "bg-blue-600 text-white shadow-2xs font-bold"
+                  : "text-slate-600 hover:bg-slate-100"
+              }`}
+            >
+              <Icon className="w-3.5 h-3.5" />
+              <span>{tab.label}</span>
+              {tab.badge && (
+                <span
+                  className={`text-[9px] px-1.5 py-0.2 rounded-full font-bold ${
+                    isActive ? "bg-white/20 text-white" : "bg-slate-200 text-slate-700"
+                  }`}
+                >
+                  {tab.badge}
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
-    </header>
+    </>
   );
 };

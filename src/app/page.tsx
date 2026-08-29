@@ -311,10 +311,10 @@ export default function LandingPage() {
       <section className="relative overflow-hidden pt-10 pb-16 bg-gradient-to-b from-blue-50/70 via-slate-50 to-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <div className="max-w-4xl mx-auto space-y-4">
-            {/* National SIH Problem Statement Badge */}
+            {/* National Department Badge */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#003366]/10 border border-[#003366]/20 text-[#003366] text-xs font-bold shadow-xs">
               <Scale className="w-4 h-4 text-[#003366]" />
-              <span>Smart India Hackathon (SIH 2026) • Problem Statement ID: 26036</span>
+              <span>Department of Consumer Affairs • Legal Metrology Division</span>
             </div>
 
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-[#0A2540] tracking-tight leading-[1.15]">

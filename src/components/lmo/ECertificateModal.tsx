@@ -14,7 +14,8 @@ import {
   Award,
   Calendar,
   Building2,
-  Scale
+  Scale,
+  ArrowLeft,
 } from "lucide-react";
 import { ECertificate } from "@/types/lmo";
 
@@ -50,11 +51,21 @@ export const ECertificateModal: React.FC<ECertificateModalProps> = ({
       <div className="bg-white rounded-3xl max-w-3xl w-full my-8 shadow-2xl border border-slate-200 overflow-hidden text-slate-900 relative">
         {/* Modal Top Actions Toolbar */}
         <div className="bg-slate-900 text-white px-6 py-4 flex items-center justify-between border-b border-slate-800">
-          <div className="flex items-center space-x-2">
-            <ShieldCheck className="w-5 h-5 text-emerald-400" />
-            <span className="font-bold text-sm">
-              Official Legal Metrology Digital Certificate
-            </span>
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={onClose}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition-colors cursor-pointer"
+            >
+              <ArrowLeft className="w-4 h-4 text-slate-400" />
+              <span>Back</span>
+            </button>
+            <div className="h-4 w-px bg-slate-700 hidden sm:block" />
+            <div className="flex items-center space-x-2">
+              <ShieldCheck className="w-5 h-5 text-emerald-400" />
+              <span className="font-bold text-sm hidden sm:inline">
+                Official Legal Metrology Certificate
+              </span>
+            </div>
           </div>
 
           <div className="flex items-center space-x-2">
@@ -70,11 +81,12 @@ export const ECertificateModal: React.FC<ECertificateModalProps> = ({
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition-colors"
             >
               <Printer className="w-3.5 h-3.5" />
-              <span>Print Certificate</span>
+              <span>Print</span>
             </button>
             <button
               onClick={onClose}
               className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition-colors"
+              title="Close"
             >
               <X className="w-4 h-4" />
             </button>
@@ -220,7 +232,7 @@ export const ECertificateModal: React.FC<ECertificateModalProps> = ({
                   Inspector of Legal Metrology / Authorized Officer
                 </p>
                 <p className="text-[9px] text-slate-400">
-                  National Legal Metrology Digital Trust Authority • SIH 26036
+                  National Legal Metrology Digital Trust Authority • Government of India
                 </p>
               </div>
             </div>
@@ -234,9 +246,10 @@ export const ECertificateModal: React.FC<ECertificateModalProps> = ({
           </span>
           <button
             onClick={onClose}
-            className="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl transition-colors"
+            className="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
           >
-            Done / Return to Dashboard
+            <ArrowLeft className="w-4 h-4 text-slate-300" />
+            <span>Back to Dashboard</span>
           </button>
         </div>
       </div>

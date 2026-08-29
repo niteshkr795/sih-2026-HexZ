@@ -39,9 +39,9 @@ export const GovFooter: React.FC = () => {
             <p className="text-slate-400 text-xs leading-relaxed">
               Unified National Online Verification, Digital Stamping & Lifecycle Certification System for Weighing and Measuring Instruments under the Legal Metrology Act, 2009.
             </p>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800 text-amber-300 text-[11px] font-mono border border-slate-700">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800 text-slate-300 text-[11px] font-medium border border-slate-700">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-              SIH 2026 • Problem Statement ID: 26036
+              Official Government of India Portal
             </div>
           </div>
 
@@ -160,7 +160,7 @@ export const GovFooter: React.FC = () => {
           <div className="text-center md:text-left space-y-1">
             <p>© 2026 Department of Consumer Affairs, Government of India. All Rights Reserved.</p>
             <p className="text-[10px] text-slate-500">
-              Portal designed and developed for Smart India Hackathon (SIH 2026) • Problem Statement ID 26036.
+              Legal Metrology Division • Department of Consumer Affairs, Government of India.
             </p>
           </div>
 

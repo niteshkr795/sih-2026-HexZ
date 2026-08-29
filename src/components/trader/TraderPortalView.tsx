@@ -18,6 +18,7 @@ import {
   BarChart3,
   Lock,
   ArrowRight,
+  ArrowLeft,
   ChevronRight,
   ExternalLink,
   Info,
@@ -622,9 +623,8 @@ const INITIAL_APPLICATIONS: VerificationApplication[] = [
 ];
 
 export function TraderPortalView({ onBackToHome }: { onBackToHome?: () => void } = {}) {
-  // Active Profile
-  const [activeProfileId, setActiveProfileId] = useState<BusinessProfileId>("apex");
-  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  // Active Registered Trader Profile
+  const [activeProfileId] = useState<BusinessProfileId>("apex");
 
   // Selected Branch Filter
   const [selectedBranch, setSelectedBranch] = useState<string>("ALL");
@@ -640,6 +640,7 @@ export function TraderPortalView({ onBackToHome }: { onBackToHome?: () => void }
     | "emergency_seal"
     | "fee_schedule"
     | "helpdesk"
+    | "profile"
   >("overview");
 
   // Instruments state
@@ -688,7 +689,7 @@ export function TraderPortalView({ onBackToHome }: { onBackToHome?: () => void }
   // Booking Flow State
   const [bookingStep, setBookingStep] = useState(1);
   const [selectedBookingInstrumentIds, setSelectedBookingInstrumentIds] = useState<string[]>([]);
-  const [bookingMode, setBookingMode] = useState<"ON_SITE" | "GATC_LAB" | "CAMP">("ON_SITE");
+  const [bookingMode, setBookingMode] = useState<"ON_SITE" | "GATC_LAB">("ON_SITE");
   const [bookingDate, setBookingDate] = useState("2026-08-31");
   const [bookingSlot, setBookingSlot] = useState("10:00 AM - 12:00 PM");
   const [bookingPaymentMethod, setBookingPaymentMethod] = useState<"UPI" | "NETBANKING" | "CHALLAN">("UPI");
@@ -755,15 +756,6 @@ export function TraderPortalView({ onBackToHome }: { onBackToHome?: () => void }
     return Array.from(set);
   }, [currentInstruments]);
 
-  // Handle Profile Switch
-  const switchProfile = (id: BusinessProfileId) => {
-    setActiveProfileId(id);
-    setSelectedBranch("ALL");
-    setIsProfileModalOpen(false);
-    setStatusFilter("ALL");
-    setCategoryFilter("ALL");
-    setSearchQuery("");
-  };
 
   // Handle New Registration Submit
   const handleRegisterSubmit = (e: React.FormEvent) => {
@@ -964,32 +956,32 @@ export function TraderPortalView({ onBackToHome }: { onBackToHome?: () => void }
           )}
         </div>
 
-        {/* Active Business Entity Switcher Card */}
-        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 mt-2 flex flex-col gap-2 shadow-xs">
+        {/* Registered Trader Entity Card (Clickable to open profile) */}
+        <div
+          onClick={() => setCurrentTab("profile")}
+          className="bg-slate-50 hover:bg-blue-50/50 border border-slate-200 hover:border-blue-300 rounded-2xl p-3.5 mt-2 flex flex-col gap-2 shadow-xs cursor-pointer transition-all group"
+          title="Click to view full Business Profile & Legal Metrology Dossier"
+        >
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-[#1A56DB] flex-shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-[#1A56DB] shrink-0 group-hover:scale-105 transition-transform">
               <currentProfile.icon className="w-5 h-5" />
             </div>
             <div className="min-w-0 flex-1">
-              <h4 className="font-bold text-xs text-slate-900 truncate" title={currentProfile.name}>
+              <h4 className="font-bold text-xs text-slate-900 truncate group-hover:text-[#1A56DB] transition-colors" title={currentProfile.name}>
                 {currentProfile.name}
               </h4>
               <p className="text-[10px] text-slate-500 font-mono truncate">
-                GST: {currentProfile.gstin}
+                GSTIN: {currentProfile.gstin}
               </p>
             </div>
           </div>
 
-          <button
-            onClick={() => setIsProfileModalOpen(true)}
-            className="w-full py-1.5 px-2.5 bg-white hover:bg-blue-50 text-[#1A56DB] border border-slate-200 hover:border-blue-200 rounded-lg text-xs font-semibold transition-all flex items-center justify-between shadow-2xs"
-          >
-            <span className="flex items-center gap-1.5">
-              <RefreshCw className="w-3.5 h-3.5" />
-              Switch Demo Business
+          <div className="pt-2 border-t border-slate-200/80 flex items-center justify-between text-[10px]">
+            <span className="text-slate-500 font-medium truncate max-w-[110px]">{currentProfile.categoryType}</span>
+            <span className="inline-flex items-center gap-1 font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 text-[10px] shrink-0">
+              <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Verified Trader
             </span>
-            <ChevronRight className="w-3.5 h-3.5" />
-          </button>
+          </div>
         </div>
 
         {/* Sidebar Nav Links */}
@@ -1089,6 +1081,18 @@ export function TraderPortalView({ onBackToHome }: { onBackToHome?: () => void }
           </span>
 
           <button
+            onClick={() => setCurrentTab("profile")}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all ${
+              currentTab === "profile"
+                ? "bg-[#1A56DB] text-white font-bold shadow-sm"
+                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+            }`}
+          >
+            <UserCheck className="w-4 h-4" />
+            <span>Business Profile</span>
+          </button>
+
+          <button
             onClick={() => setCurrentTab("emergency_seal")}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all ${
               currentTab === "emergency_seal"
@@ -1131,7 +1135,7 @@ export function TraderPortalView({ onBackToHome }: { onBackToHome?: () => void }
             <span className="flex items-center gap-1 text-emerald-600 font-semibold">
               <ShieldCheck className="w-3.5 h-3.5" /> Portal Active
             </span>
-            <span className="font-mono text-slate-400">SIH 26036</span>
+            <span className="font-mono text-slate-400">DoCA e-Maapak</span>
           </div>
           {onBackToHome ? (
             <button
@@ -1217,15 +1221,7 @@ export function TraderPortalView({ onBackToHome }: { onBackToHome?: () => void }
               <span className="hidden sm:inline">Register Scale</span>
             </button>
 
-            {/* Switch Demo Profile Button (Mobile & Desktop) */}
-            <button
-              onClick={() => setIsProfileModalOpen(true)}
-              className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors flex items-center gap-1 text-xs font-semibold"
-              title="Switch demo account"
-            >
-              <RefreshCw className="w-4 h-4 text-blue-600" />
-              <span className="hidden xl:inline">Switch Role</span>
-            </button>
+
           </div>
         </header>
 
@@ -1233,6 +1229,7 @@ export function TraderPortalView({ onBackToHome }: { onBackToHome?: () => void }
         <div className="md:hidden flex items-center overflow-x-auto bg-white border-b border-slate-200 px-4 py-2 gap-1.5 scrollbar-none text-xs">
           {[
             { id: "overview", label: "Dashboard", icon: LayoutDashboard },
+            { id: "profile", label: "Profile", icon: UserCheck },
             { id: "instruments", label: "Instruments", icon: Scale },
             { id: "booking", label: "Book Inspector", icon: CalendarCheck },
             { id: "register", label: "Register New", icon: Plus },
@@ -2510,11 +2507,11 @@ export function TraderPortalView({ onBackToHome }: { onBackToHome?: () => void }
                   </div>
 
                   {/* Step 2: Inspection Mode */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     {[
                       {
                         mode: "ON_SITE",
-                        title: "On-Site Store Visit",
+                        title: "On-Site Store Visit (LMO Officer)",
                         desc: "LMO visits your premises with standard test weights.",
                         icon: Building2,
                       },
@@ -2523,12 +2520,6 @@ export function TraderPortalView({ onBackToHome }: { onBackToHome?: () => void }
                         title: "GATC Testing Center",
                         desc: "Submit precision weights to accredited govt laboratory.",
                         icon: Scale,
-                      },
-                      {
-                        mode: "CAMP",
-                        title: "Zonal Stamping Camp",
-                        desc: "Walk-in to local market collective stamping drive.",
-                        icon: Store,
                       },
                     ].map((m) => {
                       const Icon = m.icon;
@@ -3218,6 +3209,231 @@ export function TraderPortalView({ onBackToHome }: { onBackToHome?: () => void }
               </div>
             </div>
           )}
+
+          {/* TAB 10: TRADER BUSINESS PROFILE & COMPLIANCE DOSSIER */}
+          {currentTab === "profile" && (
+            <div className="space-y-6 animate-in fade-in duration-200">
+              {/* Profile Top Banner */}
+              <div className="bg-gradient-to-r from-[#003366] via-slate-900 to-[#0A2540] text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-800 relative overflow-hidden">
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-blue-600 text-white p-1 shadow-lg flex items-center justify-center">
+                      <currentProfile.icon className="w-9 h-9" />
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h2 className="text-xl sm:text-2xl font-black tracking-tight">{currentProfile.name}</h2>
+                        <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-400/30 flex items-center gap-1">
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          Verified Commercial Enterprise
+                        </span>
+                      </div>
+                      <p className="text-xs sm:text-sm text-slate-300 font-medium">
+                        {currentProfile.categoryName} • Category: {currentProfile.categoryType}
+                      </p>
+                      <div className="flex items-center gap-3 text-xs text-slate-400 font-mono">
+                        <span>GSTIN: <strong>{currentProfile.gstin}</strong></span>
+                        <span>•</span>
+                        <span>Zone: <strong>{currentProfile.zone}</strong></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => window.print()}
+                    className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-white/10 cursor-pointer"
+                  >
+                    <Printer className="w-4 h-4" />
+                    <span>Print Trader Dossier</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Grid Layout */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Left 2 Cols: Legal Registration & Branches */}
+                <div className="lg:col-span-2 space-y-6">
+                  {/* Legal Entity & Statutory Registrations */}
+                  <div className="bg-white rounded-3xl p-6 sm:p-7 shadow-sm border border-slate-200 space-y-5">
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                      <div className="flex items-center gap-2">
+                        <Building2 className="w-5 h-5 text-[#003366]" />
+                        <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide">
+                          Legal Entity & Metrology Registration
+                        </h3>
+                      </div>
+                      <span className="text-xs font-mono text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full font-bold border border-emerald-200">
+                        Active Certificate
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                      <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 space-y-1">
+                        <span className="text-slate-500 block">Goods & Services Tax (GSTIN)</span>
+                        <span className="font-mono font-bold text-slate-900 block text-sm">
+                          {currentProfile.gstin}
+                        </span>
+                        <span className="text-[11px] text-emerald-700 font-medium">
+                          ✓ Active & Tax Compliant
+                        </span>
+                      </div>
+
+                      <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 space-y-1">
+                        <span className="text-slate-500 block">Municipal Trade License No.</span>
+                        <span className="font-mono font-bold text-slate-900 block text-sm">
+                          {currentProfile.tradeLicense}
+                        </span>
+                        <span className="text-[11px] text-slate-500">
+                          Valid for commercial retail & weighing.
+                        </span>
+                      </div>
+
+                      <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 space-y-1">
+                        <span className="text-slate-500 block">Shops & Establishment Reg.</span>
+                        <span className="font-mono font-bold text-slate-900 block text-sm">
+                          {currentProfile.establishmentReg}
+                        </span>
+                        <span className="text-[11px] text-slate-500">
+                          Registered under State Labour Dept.
+                        </span>
+                      </div>
+
+                      <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 space-y-1">
+                        <span className="text-slate-500 block">Legal Metrology Trader Enrollment ID</span>
+                        <span className="font-mono font-bold text-[#003366] block text-sm">
+                          LM-ENR-DL-2024-0918
+                        </span>
+                        <span className="text-[11px] text-slate-500">
+                          Registered under Legal Metrology Act, 2009.
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Registered Branches & Locations */}
+                  <div className="bg-white rounded-3xl p-6 sm:p-7 shadow-sm border border-slate-200 space-y-5">
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                      <div className="flex items-center gap-2">
+                        <Store className="w-5 h-5 text-blue-600" />
+                        <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide">
+                          Operating Commercial Branches & Counters
+                        </h3>
+                      </div>
+                      <span className="text-xs text-slate-500">{currentProfile.branches.length} Registered Locations</span>
+                    </div>
+
+                    <div className="space-y-3 text-xs">
+                      {currentProfile.branches.map((branchName, idx) => {
+                        const branchInstruments = currentInstruments.filter((i) => i.branch.includes(branchName) || idx === 0);
+                        return (
+                          <div
+                            key={branchName}
+                            className="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between gap-4"
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="w-9 h-9 rounded-xl bg-blue-100 text-[#1A56DB] flex items-center justify-center font-bold text-xs">
+                                0{idx + 1}
+                              </div>
+                              <div>
+                                <h4 className="font-bold text-slate-900">{branchName}</h4>
+                                <p className="text-[11px] text-slate-500">{currentProfile.zone} • Active Commercial Premise</p>
+                              </div>
+                            </div>
+
+                            <div className="text-right">
+                              <span className="font-mono font-bold text-slate-900 block text-xs">
+                                {branchInstruments.length || 1} Scales Active
+                              </span>
+                              <span className="text-[10px] text-emerald-700 font-semibold">100% Stamped</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Column: Contact, Authorized Person & Compliance Score */}
+                <div className="space-y-6">
+                  {/* Digital Metrology Passport Trust Score */}
+                  <div className="bg-gradient-to-b from-slate-900 to-slate-950 text-white rounded-3xl p-6 shadow-xl border border-slate-800 text-center space-y-4">
+                    <div className="flex items-center justify-between pb-3 border-b border-slate-800 text-[10px] uppercase tracking-widest font-mono text-amber-400">
+                      <span>Metrology Compliance</span>
+                      <span>Verified</span>
+                    </div>
+
+                    <div className="w-20 h-20 rounded-full bg-emerald-500/20 border-2 border-emerald-500 mx-auto flex flex-col items-center justify-center text-emerald-300">
+                      <span className="text-2xl font-black font-mono">100%</span>
+                      <span className="text-[8px] uppercase tracking-wider font-bold">Compliant</span>
+                    </div>
+
+                    <div>
+                      <h3 className="font-black text-base text-white">Trust & Verification Score</h3>
+                      <p className="text-xs text-slate-400 mt-0.5">
+                        All {currentInstruments.length} commercial measuring instruments hold valid Digital Passports.
+                      </p>
+                    </div>
+
+                    <div className="bg-slate-800/80 p-3 rounded-2xl border border-slate-700 text-left space-y-1.5 text-xs">
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Periodic Verification:</span>
+                        <span className="font-mono font-bold text-emerald-400">Up to Date</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Seizures / Notices:</span>
+                        <span className="font-mono font-bold text-slate-200">0 Active</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Treasury Stamping Fees:</span>
+                        <span className="font-mono font-bold text-emerald-400">Paid in Full</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Authorized Signatory & Contact Info */}
+                  <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-4 text-xs">
+                    <h4 className="font-bold text-slate-900 uppercase tracking-wider text-xs border-b border-slate-100 pb-2">
+                      Authorized Signatory & Contact
+                    </h4>
+
+                    <div className="space-y-3">
+                      <div className="flex items-start gap-2.5">
+                        <UserCheck className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
+                        <div>
+                          <span className="text-slate-400 block text-[11px]">Authorized Representative</span>
+                          <span className="font-bold text-slate-900">{currentProfile.authorizedPerson}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-2.5">
+                        <MapPin className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
+                        <div>
+                          <span className="text-slate-400 block text-[11px]">Principal Business Address</span>
+                          <span className="font-medium text-slate-800">{currentProfile.address}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2.5">
+                        <Mail className="w-4 h-4 text-slate-500 shrink-0" />
+                        <div>
+                          <span className="text-slate-400 block text-[11px]">Official Email</span>
+                          <span className="font-medium text-slate-800">{currentProfile.email}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2.5">
+                        <Phone className="w-4 h-4 text-slate-500 shrink-0" />
+                        <div>
+                          <span className="text-slate-400 block text-[11px]">Registered Mobile</span>
+                          <span className="font-medium text-slate-800">{currentProfile.phone}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </main>
 
@@ -3227,12 +3443,23 @@ export function TraderPortalView({ onBackToHome }: { onBackToHome?: () => void }
       {selectedPassportInstrument && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-150 overflow-y-auto">
           <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative my-8">
-            <button
-              onClick={() => setSelectedPassportInstrument(null)}
-              className="absolute top-6 right-6 text-slate-400 hover:text-slate-700 w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center transition-colors"
-            >
-              ✕
-            </button>
+            {/* Top Toolbar with Back Button */}
+            <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
+              <button
+                onClick={() => setSelectedPassportInstrument(null)}
+                className="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-2xs"
+              >
+                <ArrowLeft className="w-4 h-4 text-slate-700" />
+                <span>Back</span>
+              </button>
+              <button
+                onClick={() => setSelectedPassportInstrument(null)}
+                className="text-slate-400 hover:text-slate-700 w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold transition"
+                title="Close"
+              >
+                ✕
+              </button>
+            </div>
 
             {/* Certificate Header Layout */}
             <div className="text-center pb-6 border-b-2 border-slate-900 mb-6">
@@ -3360,25 +3587,35 @@ export function TraderPortalView({ onBackToHome }: { onBackToHome?: () => void }
             </div>
 
             {/* Action Bar */}
-            <div className="mt-6 pt-4 border-t border-slate-200 flex items-center justify-end gap-3">
+            <div className="mt-6 pt-4 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
               <button
-                onClick={() => {
-                  window.print?.();
-                }}
-                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5"
+                onClick={() => setSelectedPassportInstrument(null)}
+                className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
               >
-                <Printer className="w-4 h-4" />
-                <span>Print Official Certificate</span>
+                <ArrowLeft className="w-4 h-4 text-slate-600" />
+                <span>Back</span>
               </button>
-              <button
-                onClick={() => {
-                  alert(`Downloading cryptographic PDF e-Certificate for ${selectedPassportInstrument.id}...`);
-                }}
-                className="px-5 py-2 bg-[#1A56DB] hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-1.5"
-              >
-                <Download className="w-4 h-4" />
-                <span>Download Verified PDF</span>
-              </button>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    window.print?.();
+                  }}
+                  className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Printer className="w-4 h-4 text-slate-600" />
+                  <span>Print Official Certificate</span>
+                </button>
+                <button
+                  onClick={() => {
+                    alert(`Downloading cryptographic PDF e-Certificate for ${selectedPassportInstrument.id}...`);
+                  }}
+                  className="px-5 py-2.5 bg-[#1A56DB] hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Download Verified PDF</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -3469,88 +3706,7 @@ export function TraderPortalView({ onBackToHome }: { onBackToHome?: () => void }
         </div>
       )}
 
-      {/* ========================================================================= */}
-      {/* MODAL 3: SWITCH DEMO BUSINESS PROFILE MODAL                               */}
-      {/* ========================================================================= */}
-      {isProfileModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative">
-            <button
-              onClick={() => setIsProfileModalOpen(false)}
-              className="absolute top-6 right-6 text-slate-400 hover:text-slate-700 w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center transition-colors"
-            >
-              ✕
-            </button>
 
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#1A56DB] flex items-center justify-center">
-                <RefreshCw className="w-6 h-6" />
-              </div>
-              <div>
-                <h3 className="text-xl font-extrabold text-slate-950">
-                  Switch Demo Merchant Account
-                </h3>
-                <p className="text-xs text-slate-500">
-                  Explore tailored legal metrology workflows for different commercial sectors
-                </p>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              {(Object.keys(DEMO_PROFILES) as BusinessProfileId[]).map((profId) => {
-                const prof = DEMO_PROFILES[profId];
-                const Icon = prof.icon;
-                const isSelected = activeProfileId === profId;
-                const count = (instrumentsMap[profId] || []).length;
-
-                return (
-                  <div
-                    key={profId}
-                    onClick={() => switchProfile(profId)}
-                    className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-center justify-between gap-4 ${
-                      isSelected
-                        ? "bg-blue-50/60 border-[#1A56DB] shadow-xs ring-2 ring-blue-600/20"
-                        : "bg-slate-50 border-slate-200 hover:bg-slate-100"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3.5">
-                      <div
-                        className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                          isSelected ? "bg-[#1A56DB] text-white" : "bg-white text-slate-700 border border-slate-200"
-                        }`}
-                      >
-                        <Icon className="w-6 h-6" />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h4 className="font-bold text-xs sm:text-sm text-slate-900">{prof.name}</h4>
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700">
-                            {prof.categoryType}
-                          </span>
-                        </div>
-                        <p className="text-xs text-slate-500 font-mono mt-0.5">
-                          GSTIN: {prof.gstin} • {prof.zone}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="text-right flex-shrink-0">
-                      <span className="font-mono text-xs font-bold text-slate-900 block">
-                        {count} Scales
-                      </span>
-                      {isSelected ? (
-                        <span className="text-[10px] font-bold text-blue-700">ACTIVE ACCOUNT</span>
-                      ) : (
-                        <span className="text-[10px] font-semibold text-slate-400">Click to load</span>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* ========================================================================= */}
       {/* MODAL 4: REGISTRATION SUCCESS NOTIFICATION MODAL                          */}

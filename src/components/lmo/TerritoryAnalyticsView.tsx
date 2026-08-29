@@ -52,7 +52,7 @@ export const TerritoryAnalyticsView: React.FC<TerritoryAnalyticsViewProps> = ({
           <div className="space-y-2">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 text-xs font-semibold">
               <TrendingUp className="w-3.5 h-3.5" />
-              National Legal Metrology Telemetry • SIH 26036
+              National Legal Metrology Telemetry • Department of Consumer Affairs
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
               Territory Compliance & Enforcement Analytics

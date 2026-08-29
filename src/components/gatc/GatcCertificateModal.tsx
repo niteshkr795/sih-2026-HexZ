@@ -13,6 +13,7 @@ import {
   Calendar,
   Lock,
   RefreshCw,
+  ArrowLeft,
 } from "lucide-react";
 import { GatcCalibrationCertificate } from "@/types/gatc";
 
@@ -50,20 +51,28 @@ export const GatcCertificateModal: React.FC<GatcCertificateModalProps> = ({
     <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 animate-in fade-in">
       <div className="bg-white rounded-3xl max-w-3xl w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh]">
         {/* Top Modal Header */}
-        <div className="bg-slate-900 text-white p-5 sm:p-6 flex items-center justify-between border-b border-slate-800">
+        <div className="bg-slate-900 text-white p-4 sm:p-5 flex items-center justify-between border-b border-slate-800">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center shadow-md text-white">
+            <button
+              onClick={onClose}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition-colors cursor-pointer"
+            >
+              <ArrowLeft className="w-4 h-4 text-slate-400" />
+              <span>Back</span>
+            </button>
+            <div className="h-4 w-px bg-slate-700 hidden sm:block" />
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center shadow-md text-white shrink-0">
               <Award className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-lg font-bold text-white">NABL Accredited Calibration Certificate</h3>
+                <h3 className="text-sm sm:text-base font-bold text-white">NABL Calibration Certificate</h3>
                 <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold border border-emerald-400/30">
                   ISO/IEC 17025
                 </span>
               </div>
-              <p className="text-xs text-slate-400 font-mono">
-                Certificate Ref: {certificate.certificateId} • ULR: {certificate.ulrNumber}
+              <p className="text-[11px] text-slate-400 font-mono">
+                Ref: {certificate.certificateId} • ULR: {certificate.ulrNumber}
               </p>
             </div>
           </div>
@@ -71,6 +80,7 @@ export const GatcCertificateModal: React.FC<GatcCertificateModalProps> = ({
           <button
             onClick={onClose}
             className="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center font-bold"
+            title="Close"
           >
             ✕
           </button>
@@ -188,18 +198,26 @@ export const GatcCertificateModal: React.FC<GatcCertificateModalProps> = ({
 
         {/* Modal Action Bar */}
         <div className="p-4 sm:p-5 bg-slate-900 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <button
+              onClick={onClose}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition border border-slate-700 cursor-pointer"
+            >
+              <ArrowLeft className="w-4 h-4 text-slate-400" />
+              <span>Back</span>
+            </button>
+
             <button
               onClick={() => window.print()}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition border border-slate-700"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition border border-slate-700"
             >
               <Printer className="w-4 h-4 text-slate-400" />
-              <span>Print Official Certificate</span>
+              <span>Print</span>
             </button>
 
             <button
               onClick={() => alert("Downloading Cryptographically Signed PDF Report...")}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition border border-slate-700"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition border border-slate-700"
             >
               <Download className="w-4 h-4 text-slate-400" />
               <span>Download PDF</span>

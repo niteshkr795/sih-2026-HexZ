@@ -119,6 +119,8 @@ export interface OfficerProfile {
   badgeNumber: string;
   zone: string;
   state: string;
+  email?: string;
+  phone?: string;
   avatarUrl?: string;
   activeSince: string;
   totalInspectionsThisMonth: number;

@@ -5,10 +5,11 @@ import {
   ClipboardList, 
   ScanSearch, 
   FileCheck2, 
-  BarChart3 
+  BarChart3,
+  UserCheck,
 } from "lucide-react";
 
-export type LmoTabType = "queue" | "wizard" | "ledger" | "analytics";
+export type LmoTabType = "queue" | "wizard" | "ledger" | "analytics" | "profile";
 
 interface LmoNavTabsProps {
   activeTab: LmoTabType;
@@ -57,6 +58,14 @@ export const LmoNavTabs: React.FC<LmoNavTabsProps> = ({
       icon: BarChart3,
       badge: "Live KPIs",
       badgeColor: "bg-indigo-100 text-indigo-800 border-indigo-200",
+    },
+    {
+      id: "profile" as LmoTabType,
+      label: "Officer Credentials & Jurisdiction Profile",
+      shortLabel: "Officer Profile",
+      icon: UserCheck,
+      badge: "Verified Badge",
+      badgeColor: "bg-emerald-100 text-emerald-800 border-emerald-200",
     },
   ];
 

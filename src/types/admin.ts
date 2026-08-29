@@ -12,7 +12,8 @@ export type AdminTab =
   | "inspector_allocator"
   | "enforcement_seizures"
   | "standards_taxonomy"
-  | "audit_ledger";
+  | "audit_ledger"
+  | "directorate_profile";
 
 export interface NationalTelemetryKPIs {
   totalRegisteredInstruments: number;
