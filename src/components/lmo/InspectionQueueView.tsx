@@ -86,7 +86,7 @@ export const InspectionQueueView: React.FC<InspectionQueueViewProps> = ({
             Active Route Optimization • Zone 1 Dispatch
           </div>
           <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-            Today's Assigned Inspection Itinerary
+            Today&apos;s Assigned Inspection Itinerary
           </h2>
           <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
             Legal Metrology Act, 2009 mandatory annual re-verifications, APMC Mandi bulk scale tests, 

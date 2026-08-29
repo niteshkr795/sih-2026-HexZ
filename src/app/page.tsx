@@ -6,6 +6,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { TraderPortalView } from "@/components/trader/TraderPortalView";
 import { LmoDashboardView } from "@/components/lmo/LmoDashboardView";
+import { GatcDashboardView } from "@/components/gatc/GatcDashboardView";
+import { AdminDashboardView } from "@/components/admin/AdminDashboardView";
 import {
   Shield,
   CheckCircle2,
@@ -39,7 +41,7 @@ import {
 } from "lucide-react";
 
 type RoleType = "businessman" | "lmo" | "gatc" | "admin";
-export type PortalViewMode = "landing" | "trader" | "lmo";
+export type PortalViewMode = "landing" | "trader" | "lmo" | "gatc" | "admin";
 
 export default function LandingPage() {
   const router = useRouter();
@@ -97,6 +99,10 @@ export default function LandingPage() {
       handleSetPortalView("lmo");
     } else if (role === "businessman") {
       handleSetPortalView("trader");
+    } else if (role === "gatc") {
+      handleSetPortalView("gatc");
+    } else if (role === "admin") {
+      handleSetPortalView("admin");
     } else {
       alert(`Login submitted for ${roleDetails[role].title}. (Prototype UI Mode)`);
     }
@@ -289,13 +295,25 @@ export default function LandingPage() {
                 onClick={() => setActivePortalView("landing")}
                 className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-lg text-xs font-semibold border border-slate-700 transition-colors flex items-center gap-1.5 shadow-xs"
               >
-                <span>🏠 Main Portal / Overview</span>
+                <span>🏠 Main Overview</span>
               </button>
               <button
                 onClick={() => handleSetPortalView("lmo")}
                 className="px-3 py-1.5 bg-emerald-800/90 hover:bg-emerald-700 text-emerald-100 rounded-lg text-xs font-semibold border border-emerald-600/50 transition-colors flex items-center gap-1.5 shadow-xs"
               >
-                <span>🛡️ Switch to LMO Inspector Suite</span>
+                <span>🛡️ LMO Suite</span>
+              </button>
+              <button
+                onClick={() => setActivePortalView("gatc")}
+                className="px-3 py-1.5 bg-amber-800/90 hover:bg-amber-700 text-amber-100 rounded-lg text-xs font-semibold border border-amber-600/50 transition-colors flex items-center gap-1.5 shadow-xs"
+              >
+                <span>⚖️ GATC Lab</span>
+              </button>
+              <button
+                onClick={() => setActivePortalView("admin")}
+                className="px-3 py-1.5 bg-indigo-800/90 hover:bg-indigo-700 text-indigo-100 rounded-lg text-xs font-semibold border border-indigo-600/50 transition-colors flex items-center gap-1.5 shadow-xs"
+              >
+                <span>📊 Directorate Admin</span>
               </button>
               <button
                 onClick={triggerVerifyHighlight}
@@ -332,13 +350,25 @@ export default function LandingPage() {
                 onClick={() => handleSetPortalView("landing")}
                 className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-lg text-xs font-semibold border border-slate-700 transition-colors flex items-center gap-1.5 shadow-xs"
               >
-                <span>🏠 Main Portal / Overview</span>
+                <span>🏠 Main Overview</span>
               </button>
               <button
                 onClick={() => handleSetPortalView("trader")}
                 className="px-3 py-1.5 bg-blue-800/90 hover:bg-blue-700 text-blue-100 rounded-lg text-xs font-semibold border border-blue-600/50 transition-colors flex items-center gap-1.5 shadow-xs"
               >
-                <span>🏢 Switch to Trader Portal</span>
+                <span>🏢 Trader Portal</span>
+              </button>
+              <button
+                onClick={() => setActivePortalView("gatc")}
+                className="px-3 py-1.5 bg-amber-800/90 hover:bg-amber-700 text-amber-100 rounded-lg text-xs font-semibold border border-amber-600/50 transition-colors flex items-center gap-1.5 shadow-xs"
+              >
+                <span>⚖️ GATC Lab</span>
+              </button>
+              <button
+                onClick={() => setActivePortalView("admin")}
+                className="px-3 py-1.5 bg-indigo-800/90 hover:bg-indigo-700 text-indigo-100 rounded-lg text-xs font-semibold border border-indigo-600/50 transition-colors flex items-center gap-1.5 shadow-xs"
+              >
+                <span>📊 Directorate Admin</span>
               </button>
               <button
                 onClick={triggerVerifyHighlight}
@@ -352,6 +382,100 @@ export default function LandingPage() {
           </div>
         </div>
         <LmoDashboardView onBackToHome={() => handleSetPortalView("landing")} />
+      </div>
+    );
+  }
+
+  if (activePortalView === "gatc") {
+    return (
+      <div className="min-h-screen flex flex-col bg-[#F9FAFB]">
+        {/* Unified EcoSystem Switcher Bar */}
+        <div className="bg-slate-950 text-white px-4 py-2.5 border-b border-slate-800 sticky top-0 z-50 shadow-md">
+          <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs">
+            <div className="flex items-center space-x-2.5">
+              <span className="bg-amber-600 text-white font-mono font-bold text-[10px] px-2 py-0.5 rounded uppercase tracking-wider">
+                DigiPass Ecosystem
+              </span>
+              <span className="text-slate-300 font-semibold hidden sm:inline">
+                Active View: <strong className="text-white">Govt Approved Test Center (GATC) Lab</strong>
+              </span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setActivePortalView("landing")}
+                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-lg text-xs font-semibold border border-slate-700 transition-colors flex items-center gap-1.5 shadow-xs"
+              >
+                <span>🏠 Main Overview</span>
+              </button>
+              <button
+                onClick={() => setActivePortalView("trader")}
+                className="px-3 py-1.5 bg-blue-800/90 hover:bg-blue-700 text-blue-100 rounded-lg text-xs font-semibold border border-blue-600/50 transition-colors flex items-center gap-1.5 shadow-xs"
+              >
+                <span>🏢 Trader Portal</span>
+              </button>
+              <button
+                onClick={() => setActivePortalView("lmo")}
+                className="px-3 py-1.5 bg-emerald-800/90 hover:bg-emerald-700 text-emerald-100 rounded-lg text-xs font-semibold border border-emerald-600/50 transition-colors flex items-center gap-1.5 shadow-xs"
+              >
+                <span>🛡️ LMO Suite</span>
+              </button>
+              <button
+                onClick={() => setActivePortalView("admin")}
+                className="px-3 py-1.5 bg-indigo-800/90 hover:bg-indigo-700 text-indigo-100 rounded-lg text-xs font-semibold border border-indigo-600/50 transition-colors flex items-center gap-1.5 shadow-xs"
+              >
+                <span>📊 Directorate Admin</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <GatcDashboardView onBackToHome={() => setActivePortalView("landing")} />
+      </div>
+    );
+  }
+
+  if (activePortalView === "admin") {
+    return (
+      <div className="min-h-screen flex flex-col bg-[#F9FAFB]">
+        {/* Unified EcoSystem Switcher Bar */}
+        <div className="bg-slate-950 text-white px-4 py-2.5 border-b border-slate-800 sticky top-0 z-50 shadow-md">
+          <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs">
+            <div className="flex items-center space-x-2.5">
+              <span className="bg-indigo-600 text-white font-mono font-bold text-[10px] px-2 py-0.5 rounded uppercase tracking-wider">
+                DigiPass Ecosystem
+              </span>
+              <span className="text-slate-300 font-semibold hidden sm:inline">
+                Active View: <strong className="text-white">Directorate & Ministry Administrator</strong>
+              </span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setActivePortalView("landing")}
+                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-lg text-xs font-semibold border border-slate-700 transition-colors flex items-center gap-1.5 shadow-xs"
+              >
+                <span>🏠 Main Overview</span>
+              </button>
+              <button
+                onClick={() => setActivePortalView("trader")}
+                className="px-3 py-1.5 bg-blue-800/90 hover:bg-blue-700 text-blue-100 rounded-lg text-xs font-semibold border border-blue-600/50 transition-colors flex items-center gap-1.5 shadow-xs"
+              >
+                <span>🏢 Trader Portal</span>
+              </button>
+              <button
+                onClick={() => setActivePortalView("lmo")}
+                className="px-3 py-1.5 bg-emerald-800/90 hover:bg-emerald-700 text-emerald-100 rounded-lg text-xs font-semibold border border-emerald-600/50 transition-colors flex items-center gap-1.5 shadow-xs"
+              >
+                <span>🛡️ LMO Suite</span>
+              </button>
+              <button
+                onClick={() => setActivePortalView("gatc")}
+                className="px-3 py-1.5 bg-amber-800/90 hover:bg-amber-700 text-amber-100 rounded-lg text-xs font-semibold border border-amber-600/50 transition-colors flex items-center gap-1.5 shadow-xs"
+              >
+                <span>⚖️ GATC Lab</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <AdminDashboardView onBackToHome={() => setActivePortalView("landing")} />
       </div>
     );
   }
@@ -567,6 +691,34 @@ export default function LandingPage() {
               </button>
             </div>
 
+            {/* Quick Portal Switcher Pills */}
+            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs text-slate-600">
+              <span className="font-semibold text-slate-700 mr-1">Direct Stakeholder Portals:</span>
+              <button
+                onClick={() => handleSetPortalView("trader")}
+                className="px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 shadow-sm font-bold transition-all flex items-center gap-1 cursor-pointer"
+              >
+                🏢 Businessman / Trader Portal →
+              </button>
+              <button
+                onClick={() => handleSetPortalView("lmo")}
+                className="px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 shadow-sm font-bold transition-all flex items-center gap-1 cursor-pointer"
+              >
+                🛡️ LMO Field Inspector →
+              </button>
+              <button
+                onClick={() => handleSetPortalView("gatc")}
+                className="px-3 py-1.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 hover:bg-amber-100 shadow-sm font-bold transition-all flex items-center gap-1 cursor-pointer"
+              >
+                ⚖️ GATC Testing Lab →
+              </button>
+              <button
+                onClick={() => handleSetPortalView("admin")}
+                className="px-3 py-1.5 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100 shadow-sm font-bold transition-all flex items-center gap-1 cursor-pointer"
+              >
+                📊 Directorate Admin →
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -744,19 +896,26 @@ export default function LandingPage() {
                       <span>Sign In as LMO</span>
                       <ChevronRight className="w-4 h-4" />
                     </button>
+                  ) : roleKey === "gatc" ? (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActivePortalView("gatc");
+                      }}
+                      className="w-full py-2.5 rounded-xl font-bold text-xs bg-amber-600 text-white hover:bg-amber-700 shadow-sm transition-colors flex items-center justify-center gap-1.5"
+                    >
+                      <span>Open GATC Testing Lab</span>
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
                   ) : (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        openLoginForRole(roleKey);
+                        setActivePortalView("admin");
                       }}
-                      className={`w-full py-2.5 rounded-xl font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 ${
-                        isSelected
-                          ? "bg-blue-600 text-white hover:bg-blue-700 shadow-sm"
-                          : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                      }`}
+                      className="w-full py-2.5 rounded-xl font-bold text-xs bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm transition-colors flex items-center justify-center gap-1.5"
                     >
-                      <span>Sign In as {role.title.split(" ")[0]}</span>
+                      <span>Open Directorate Admin</span>
                       <ChevronRight className="w-4 h-4" />
                     </button>
                   )}
@@ -844,13 +1003,7 @@ export default function LandingPage() {
                         onSubmit={(e) => {
                           e.preventDefault();
                           setIsLoginModalOpen(false);
-                          if (selectedRole === "businessman") {
-                            handleSetPortalView("trader");
-                          } else if (selectedRole === "lmo") {
-                            handleSetPortalView("lmo");
-                          } else {
-                            alert(`Login submitted for ${activeRoleData.title}. (Prototype UI Mode)`);
-                          }
+                          handleAuthenticate(selectedRole);
                         }}
                         className="space-y-4 text-left"
                       >
@@ -919,6 +1072,7 @@ export default function LandingPage() {
                   </div>
                 </div>
               </div>
+
             </div>
           )}
         </div>
@@ -1186,13 +1340,7 @@ export default function LandingPage() {
               onSubmit={(e) => {
                 e.preventDefault();
                 setIsLoginModalOpen(false);
-                if (selectedRole === "businessman") {
-                  handleSetPortalView("trader");
-                } else if (selectedRole === "lmo") {
-                  handleSetPortalView("lmo");
-                } else {
-                  alert(`Authenticated as ${roleDetails[selectedRole].title}. Entering portal dashboard...`);
-                }
+                handleAuthenticate(selectedRole);
               }}
               className="space-y-4"
             >

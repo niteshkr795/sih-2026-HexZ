@@ -644,7 +644,7 @@ export function TraderPortalView({ onBackToHome }: { onBackToHome?: () => void }
 
   // Instruments state
   const [instrumentsMap, setInstrumentsMap] = useState<Record<BusinessProfileId, InstrumentItem[]>>(INITIAL_INSTRUMENTS);
-  const currentInstruments = instrumentsMap[activeProfileId] || [];
+  const currentInstruments = useMemo(() => instrumentsMap[activeProfileId] || [], [instrumentsMap, activeProfileId]);
 
   // Filter & Search states
   const [searchQuery, setSearchQuery] = useState("");
