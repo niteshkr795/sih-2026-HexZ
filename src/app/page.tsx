@@ -8,13 +8,15 @@ import { TraderPortalView } from "@/components/trader/TraderPortalView";
 import { LmoDashboardView } from "@/components/lmo/LmoDashboardView";
 import { GatcDashboardView } from "@/components/gatc/GatcDashboardView";
 import { AdminDashboardView } from "@/components/admin/AdminDashboardView";
+import { GovHeader } from "@/components/gov/GovHeader";
+import { GovFooter } from "@/components/gov/GovFooter";
+import { StakeholderRegistrationModal } from "@/components/gov/StakeholderRegistrationModal";
 import {
   Shield,
   CheckCircle2,
   AlertTriangle,
   XCircle,
   QrCode,
-  Scan,
   Search,
   Building2,
   UserCheck,
@@ -37,75 +39,42 @@ import {
   Globe,
   SlidersHorizontal,
   ChevronDown,
-  X
+  Phone,
+  HelpCircle,
+  Zap,
+  Users,
 } from "lucide-react";
 
-type RoleType = "businessman" | "lmo" | "gatc" | "admin";
+export type RoleType = "businessman" | "lmo" | "gatc" | "admin";
 export type PortalViewMode = "landing" | "trader" | "lmo" | "gatc" | "admin";
 
 export default function LandingPage() {
   const router = useRouter();
   const [activePortalView, setActivePortalView] = useState<PortalViewMode>("landing");
-
-  // Sync state with URL so back button works correctly
-  React.useEffect(() => {
-    const handlePopState = () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const portal = urlParams.get('portal');
-      if (portal === 'lmo' || portal === 'trader') {
-        setActivePortalView(portal as PortalViewMode);
-      } else {
-        setActivePortalView('landing');
-      }
-    };
-    
-    // Check initial URL on mount
-    handlePopState();
-
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
-
-  const handleSetPortalView = (view: PortalViewMode) => {
-    const url = view === 'landing' ? window.location.pathname : `?portal=${view}`;
-    window.history.pushState({}, '', url);
-    setActivePortalView(view);
-  };
-
   const [selectedRole, setSelectedRole] = useState<RoleType>("businessman");
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isRegModalOpen, setIsRegModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResult, setSearchResult] = useState<any | null>(null);
   const [isSearching, setIsSearching] = useState(false);
-  const [activeTab, setActiveTab] = useState<"overview" | "features" | "lifecycle" | "standards">("overview");
-  const [isHighlightingVerify, setIsHighlightingVerify] = useState(false);
-
-  const triggerVerifyHighlight = () => {
-    handleSetPortalView("landing");
-    setIsHighlightingVerify(true);
-    setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      (document.querySelector('input[placeholder*="Enter Instrument ID"]') as HTMLInputElement)?.focus();
-      
-      // Remove highlight after 2.5 seconds
-      setTimeout(() => {
-        setIsHighlightingVerify(false);
-      }, 2500);
-    }, 100);
-  };
 
   const handleAuthenticate = (role: RoleType) => {
     if (role === "lmo") {
-      handleSetPortalView("lmo");
+      setActivePortalView("lmo");
     } else if (role === "businessman") {
-      handleSetPortalView("trader");
+      setActivePortalView("trader");
     } else if (role === "gatc") {
-      handleSetPortalView("gatc");
+      setActivePortalView("gatc");
     } else if (role === "admin") {
-      handleSetPortalView("admin");
-    } else {
-      console.error(`Login submitted for unknown role: ${String(role)}`);
+      setActivePortalView("admin");
     }
+  };
+
+  const handleOpenLoginForRole = (role?: RoleType) => {
+    if (role) {
+      setSelectedRole(role);
+    }
+    setIsLoginModalOpen(true);
   };
 
   // Sample mock passport data for instant public verification lookup demo
@@ -168,15 +137,12 @@ export default function LandingPage() {
     if (!searchQuery.trim()) return;
     setIsSearching(true);
     setTimeout(() => {
-      const match = samplePassports[searchQuery.trim().toUpperCase()] || samplePassports["IN-MET-2026-8941"];
+      const match =
+        samplePassports[searchQuery.trim().toUpperCase()] ||
+        samplePassports["IN-MET-2026-8941"];
       setSearchResult(match);
       setIsSearching(false);
-    }, 450);
-  };
-
-  const openLoginForRole = (role: RoleType) => {
-    setSelectedRole(role);
-    setIsLoginModalOpen(true);
+    }, 350);
   };
 
   const roleDetails: Record<
@@ -198,50 +164,50 @@ export default function LandingPage() {
     businessman: {
       title: "Businessman & Instrument Owner",
       subtitle: "Commercial Traders, Importers & Manufacturers",
-      badge: "Industry / Commercial",
+      badge: "Commercial Stakeholder",
       icon: Building2,
       color: "text-blue-600",
       accentBg: "bg-blue-50 border-blue-200",
       description:
-        "Manage instrument registrations, apply for initial/periodic verifications, track application status in real time, and download verified digital certificates with instant QR codes.",
+        "Manage registered weighing instruments, apply for initial verification or periodic re-verification, track inspector visit schedules in real time, and download verified digital QR certificates.",
       sampleEmail: "trade.ops@apexretail.in",
       sampleIdLabel: "Business Entity / GSTIN",
       sampleIdVal: "07AAACA6582N1ZT",
       capabilities: [
-        "Register new weighing & measuring instruments",
-        "Submit online re-verification applications",
-        "Track LMO assignment & scheduled visit",
-        "Download cryptographic PDF e-Certificates",
+        "Online initial & periodic re-verification applications",
+        "Digital repository of verified instruments and due dates",
+        "Download cryptographic PDF e-Certificates with QR codes",
+        "Automated alerts for validity expiry and renewal",
       ],
     },
     lmo: {
       title: "Legal Metrology Officer (LMO)",
-      subtitle: "Authorized Field Verification Inspectors",
-      badge: "Enforcement Authority",
+      subtitle: "State Enforcement & Field Verification Inspectors",
+      badge: "Enforcement Officer",
       icon: Shield,
       color: "text-emerald-600",
       accentBg: "bg-emerald-50 border-emerald-200",
       description:
-        "Access mobile-optimized field verification workflows, load instrument passport history, execute standardized checklists, record geotagged photo evidence, and approve/lock verification records.",
+        "Mobile-first field verification suite to execute standardized load tests per OIML R76, calculate Maximum Permissible Errors, record geotagged photo evidence, and issue official e-Certificates.",
       sampleEmail: "lmo.delhi.zone1@legalmetrology.gov.in",
       sampleIdLabel: "Officer Badge / Employee ID",
       sampleIdVal: "LMO-DL-2026-042",
       capabilities: [
-        "Mobile-first on-site field verification checklists",
+        "Mobile-optimized on-site inspection checklists",
         "Live photo capture & GPS stamping of physical seals",
         "Instant passport retrieval & historical compliance audit",
-        "Direct approval & cryptographic certificate generation",
+        "Direct approval & cryptographic e-Certificate generation",
       ],
     },
     gatc: {
       title: "Govt Approved Test Center (GATC)",
       subtitle: "Accredited Testing & Calibration Laboratories",
-      badge: "Accredited Lab",
+      badge: "NABL Laboratory",
       icon: Scale,
       color: "text-amber-600",
       accentBg: "bg-amber-50 border-amber-200",
       description:
-        "Perform precision metrological testing for high-capacity weights, measures, flow meters, and weighing bridges. Issue laboratory calibration reports and sync testing records to the passport.",
+        "Perform precision metrological testing for high-capacity weighbridges, mass standards, and fuel flow meter provers. Issue ISO/IEC 17025 calibration certificates synchronized to the Central Passport.",
       sampleEmail: "lab.director@gatc-national.res.in",
       sampleIdLabel: "NABL / GATC Accreditation Code",
       sampleIdVal: "GATC-NABL-CAL-8841",
@@ -255,20 +221,20 @@ export default function LandingPage() {
     admin: {
       title: "Central & State Administrator",
       subtitle: "Ministry Regulators & Directorate Operations",
-      badge: "Govt Governance",
+      badge: "Govt Authority",
       icon: UserCheck,
       color: "text-indigo-600",
       accentBg: "bg-indigo-50 border-indigo-200",
       description:
-        "Comprehensive regulatory oversight with real-time KPI dashboards, inspector allocation, pendency tracking, non-compliance heatmaps, audit logs, and master instrument taxonomy configuration.",
+        "National compliance oversight with real-time KPI dashboards, inspector allocation balancing, pendency tracking, Section 15/27 seizure logs, and statutory fee schedules.",
       sampleEmail: "superadmin.metrology@nic.in",
       sampleIdLabel: "Ministry Authorization ID",
       sampleIdVal: "MOCA-FPD-GOV-001",
       capabilities: [
         "National compliance overview & KPI telemetry",
         "Intelligent inspector allocation & conflict resolution",
-        "Automated expiry alerts & re-verification notices",
-        "Immutable chronological audit trail logs",
+        "Enforcement and seizure logbook under Section 15/27",
+        "Immutable cryptographic verification audit ledger",
       ],
     },
   };
@@ -279,54 +245,13 @@ export default function LandingPage() {
   if (activePortalView === "trader") {
     return (
       <div className="min-h-screen flex flex-col bg-[#F9FAFB]">
-        {/* Unified EcoSystem Switcher Bar */}
-        <div className="bg-slate-950 text-white px-4 py-2.5 border-b border-slate-800 sticky top-0 z-50 shadow-md">
-          <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs">
-            <div className="flex items-center space-x-2.5">
-              <span className="bg-blue-600 text-white font-mono font-bold text-[10px] px-2 py-0.5 rounded uppercase tracking-wider">
-                DigiPass Ecosystem
-              </span>
-              <span className="text-slate-300 font-semibold hidden sm:inline">
-                Active View: <strong className="text-white">Businessman & Trader Portal</strong>
-              </span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => setActivePortalView("landing")}
-                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-lg text-xs font-semibold border border-slate-700 transition-colors flex items-center gap-1.5 shadow-xs"
-              >
-                <span>🏠 Main Overview</span>
-              </button>
-              <button
-                onClick={() => handleSetPortalView("lmo")}
-                className="px-3 py-1.5 bg-emerald-800/90 hover:bg-emerald-700 text-emerald-100 rounded-lg text-xs font-semibold border border-emerald-600/50 transition-colors flex items-center gap-1.5 shadow-xs"
-              >
-                <span>🛡️ LMO Suite</span>
-              </button>
-              <button
-                onClick={() => setActivePortalView("gatc")}
-                className="px-3 py-1.5 bg-amber-800/90 hover:bg-amber-700 text-amber-100 rounded-lg text-xs font-semibold border border-amber-600/50 transition-colors flex items-center gap-1.5 shadow-xs"
-              >
-                <span>⚖️ GATC Lab</span>
-              </button>
-              <button
-                onClick={() => setActivePortalView("admin")}
-                className="px-3 py-1.5 bg-indigo-800/90 hover:bg-indigo-700 text-indigo-100 rounded-lg text-xs font-semibold border border-indigo-600/50 transition-colors flex items-center gap-1.5 shadow-xs"
-              >
-                <span>📊 Directorate Admin</span>
-              </button>
-              <button
-                onClick={triggerVerifyHighlight}
-                className="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-amber-950 rounded-lg text-xs font-extrabold border border-amber-600 transition-colors flex items-center gap-1.5 shadow-md relative overflow-hidden"
-              >
-                <span className="absolute inset-0 bg-white/20 animate-pulse pointer-events-none"></span>
-                <QrCode className="w-3.5 h-3.5 relative z-10" />
-                <span className="relative z-10">🔍 Public Verification</span>
-              </button>
-            </div>
-          </div>
-        </div>
-        <TraderPortalView onBackToHome={() => handleSetPortalView("landing")} />
+        <GovHeader
+          onSelectPortal={setActivePortalView}
+          onOpenLogin={handleOpenLoginForRole}
+          currentPortal="trader"
+        />
+        <TraderPortalView onBackToHome={() => setActivePortalView("landing")} />
+        <GovFooter />
       </div>
     );
   }
@@ -334,54 +259,13 @@ export default function LandingPage() {
   if (activePortalView === "lmo") {
     return (
       <div className="min-h-screen flex flex-col bg-[#F8FAFC]">
-        {/* Unified EcoSystem Switcher Bar */}
-        <div className="bg-slate-950 text-white px-4 py-2.5 border-b border-slate-800 sticky top-0 z-50 shadow-md">
-          <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs">
-            <div className="flex items-center space-x-2.5">
-              <span className="bg-emerald-600 text-white font-mono font-bold text-[10px] px-2 py-0.5 rounded uppercase tracking-wider">
-                DigiPass Ecosystem
-              </span>
-              <span className="text-slate-300 font-semibold hidden sm:inline">
-                Active View: <strong className="text-white">Legal Metrology Officer (LMO) Suite</strong>
-              </span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => handleSetPortalView("landing")}
-                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-lg text-xs font-semibold border border-slate-700 transition-colors flex items-center gap-1.5 shadow-xs"
-              >
-                <span>🏠 Main Overview</span>
-              </button>
-              <button
-                onClick={() => handleSetPortalView("trader")}
-                className="px-3 py-1.5 bg-blue-800/90 hover:bg-blue-700 text-blue-100 rounded-lg text-xs font-semibold border border-blue-600/50 transition-colors flex items-center gap-1.5 shadow-xs"
-              >
-                <span>🏢 Trader Portal</span>
-              </button>
-              <button
-                onClick={() => setActivePortalView("gatc")}
-                className="px-3 py-1.5 bg-amber-800/90 hover:bg-amber-700 text-amber-100 rounded-lg text-xs font-semibold border border-amber-600/50 transition-colors flex items-center gap-1.5 shadow-xs"
-              >
-                <span>⚖️ GATC Lab</span>
-              </button>
-              <button
-                onClick={() => setActivePortalView("admin")}
-                className="px-3 py-1.5 bg-indigo-800/90 hover:bg-indigo-700 text-indigo-100 rounded-lg text-xs font-semibold border border-indigo-600/50 transition-colors flex items-center gap-1.5 shadow-xs"
-              >
-                <span>📊 Directorate Admin</span>
-              </button>
-              <button
-                onClick={triggerVerifyHighlight}
-                className="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-amber-950 rounded-lg text-xs font-extrabold border border-amber-600 transition-colors flex items-center gap-1.5 shadow-md relative overflow-hidden"
-              >
-                <span className="absolute inset-0 bg-white/20 animate-pulse pointer-events-none"></span>
-                <QrCode className="w-3.5 h-3.5 relative z-10" />
-                <span className="relative z-10">🔍 Public Verification</span>
-              </button>
-            </div>
-          </div>
-        </div>
-        <LmoDashboardView onBackToHome={() => handleSetPortalView("landing")} />
+        <GovHeader
+          onSelectPortal={setActivePortalView}
+          onOpenLogin={handleOpenLoginForRole}
+          currentPortal="lmo"
+        />
+        <LmoDashboardView onBackToHome={() => setActivePortalView("landing")} />
+        <GovFooter />
       </div>
     );
   }
@@ -389,46 +273,13 @@ export default function LandingPage() {
   if (activePortalView === "gatc") {
     return (
       <div className="min-h-screen flex flex-col bg-[#F9FAFB]">
-        {/* Unified EcoSystem Switcher Bar */}
-        <div className="bg-slate-950 text-white px-4 py-2.5 border-b border-slate-800 sticky top-0 z-50 shadow-md">
-          <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs">
-            <div className="flex items-center space-x-2.5">
-              <span className="bg-amber-600 text-white font-mono font-bold text-[10px] px-2 py-0.5 rounded uppercase tracking-wider">
-                DigiPass Ecosystem
-              </span>
-              <span className="text-slate-300 font-semibold hidden sm:inline">
-                Active View: <strong className="text-white">Govt Approved Test Center (GATC) Lab</strong>
-              </span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => setActivePortalView("landing")}
-                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-lg text-xs font-semibold border border-slate-700 transition-colors flex items-center gap-1.5 shadow-xs"
-              >
-                <span>🏠 Main Overview</span>
-              </button>
-              <button
-                onClick={() => setActivePortalView("trader")}
-                className="px-3 py-1.5 bg-blue-800/90 hover:bg-blue-700 text-blue-100 rounded-lg text-xs font-semibold border border-blue-600/50 transition-colors flex items-center gap-1.5 shadow-xs"
-              >
-                <span>🏢 Trader Portal</span>
-              </button>
-              <button
-                onClick={() => setActivePortalView("lmo")}
-                className="px-3 py-1.5 bg-emerald-800/90 hover:bg-emerald-700 text-emerald-100 rounded-lg text-xs font-semibold border border-emerald-600/50 transition-colors flex items-center gap-1.5 shadow-xs"
-              >
-                <span>🛡️ LMO Suite</span>
-              </button>
-              <button
-                onClick={() => setActivePortalView("admin")}
-                className="px-3 py-1.5 bg-indigo-800/90 hover:bg-indigo-700 text-indigo-100 rounded-lg text-xs font-semibold border border-indigo-600/50 transition-colors flex items-center gap-1.5 shadow-xs"
-              >
-                <span>📊 Directorate Admin</span>
-              </button>
-            </div>
-          </div>
-        </div>
+        <GovHeader
+          onSelectPortal={setActivePortalView}
+          onOpenLogin={handleOpenLoginForRole}
+          currentPortal="gatc"
+        />
         <GatcDashboardView onBackToHome={() => setActivePortalView("landing")} />
+        <GovFooter />
       </div>
     );
   }
@@ -436,378 +287,215 @@ export default function LandingPage() {
   if (activePortalView === "admin") {
     return (
       <div className="min-h-screen flex flex-col bg-[#F9FAFB]">
-        {/* Unified EcoSystem Switcher Bar */}
-        <div className="bg-slate-950 text-white px-4 py-2.5 border-b border-slate-800 sticky top-0 z-50 shadow-md">
-          <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs">
-            <div className="flex items-center space-x-2.5">
-              <span className="bg-indigo-600 text-white font-mono font-bold text-[10px] px-2 py-0.5 rounded uppercase tracking-wider">
-                DigiPass Ecosystem
-              </span>
-              <span className="text-slate-300 font-semibold hidden sm:inline">
-                Active View: <strong className="text-white">Directorate & Ministry Administrator</strong>
-              </span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => setActivePortalView("landing")}
-                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-lg text-xs font-semibold border border-slate-700 transition-colors flex items-center gap-1.5 shadow-xs"
-              >
-                <span>🏠 Main Overview</span>
-              </button>
-              <button
-                onClick={() => setActivePortalView("trader")}
-                className="px-3 py-1.5 bg-blue-800/90 hover:bg-blue-700 text-blue-100 rounded-lg text-xs font-semibold border border-blue-600/50 transition-colors flex items-center gap-1.5 shadow-xs"
-              >
-                <span>🏢 Trader Portal</span>
-              </button>
-              <button
-                onClick={() => setActivePortalView("lmo")}
-                className="px-3 py-1.5 bg-emerald-800/90 hover:bg-emerald-700 text-emerald-100 rounded-lg text-xs font-semibold border border-emerald-600/50 transition-colors flex items-center gap-1.5 shadow-xs"
-              >
-                <span>🛡️ LMO Suite</span>
-              </button>
-              <button
-                onClick={() => setActivePortalView("gatc")}
-                className="px-3 py-1.5 bg-amber-800/90 hover:bg-amber-700 text-amber-100 rounded-lg text-xs font-semibold border border-amber-600/50 transition-colors flex items-center gap-1.5 shadow-xs"
-              >
-                <span>⚖️ GATC Lab</span>
-              </button>
-            </div>
-          </div>
-        </div>
+        <GovHeader
+          onSelectPortal={setActivePortalView}
+          onOpenLogin={handleOpenLoginForRole}
+          currentPortal="admin"
+        />
         <AdminDashboardView onBackToHome={() => setActivePortalView("landing")} />
+        <GovFooter />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F9FAFB] text-slate-900 selection:bg-blue-600 selection:text-white">
-      {/* Top Advisory Banner */}
-      <div className="bg-slate-900 text-slate-200 text-xs px-4 py-2 border-b border-slate-800 flex items-center justify-between">
-        <div className="max-w-7xl mx-auto w-full flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center space-x-2">
-            <span className="bg-blue-600 text-white font-semibold text-[10px] px-2 py-0.5 rounded tracking-wide uppercase">
-              Official Portal
-            </span>
-            <span className="text-slate-300">
-              Department of Legal Metrology • National Digital Instrument Passport Ecosystem (SIH 26036)
-            </span>
-          </div>
-          <div className="flex items-center space-x-4 text-[11px] text-slate-400">
-            <span className="flex items-center gap-1">
-              <Shield className="w-3.5 h-3.5 text-emerald-400" /> Tamper-Proof Cryptographic QR
-            </span>
-            <span className="hidden md:inline">•</span>
-            <span className="hidden md:inline">24x7 Helpline: 1800-11-4000</span>
-          </div>
-        </div>
-      </div>
+      {/* Official Government Header */}
+      <GovHeader
+        onSelectPortal={setActivePortalView}
+        onOpenLogin={handleOpenLoginForRole}
+        currentPortal="landing"
+      />
 
-      {/* Main Header / Navigation */}
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 transition-all shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          {/* Logo & Department Branding */}
-          <div className="flex items-center space-x-4">
-            <div className="relative w-12 h-12 rounded-xl overflow-hidden shadow-sm border border-slate-200 bg-white p-0.5 flex-shrink-0">
-              <Image
-                src="/logo.jpg"
-                alt="DigiPass Logo"
-                fill
-                className="object-contain"
-                priority
-              />
-            </div>
-            <div>
-              <div className="flex items-center space-x-2">
-                <span className="font-extrabold text-2xl tracking-tight text-slate-950 font-mono">
-                  Digi<span className="text-blue-600">Pass</span>
-                </span>
-                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full border border-blue-200">
-                  SIH 26036
-                </span>
-              </div>
-              <p className="text-xs text-slate-500 font-medium hidden sm:block">
-                Digital Instrument Passport & Smart Field Verification
-              </p>
-            </div>
-          </div>
-
-          {/* Center Navigation Links */}
-          <nav className="hidden lg:flex items-center space-x-6 text-sm font-medium text-slate-600">
-            <a href="#ecosystem" className="hover:text-blue-600 transition-colors">
-              Ecosystem
-            </a>
-            
-            <button
-              onClick={triggerVerifyHighlight}
-              className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-amber-950 rounded-lg text-sm font-extrabold border border-amber-600 transition-colors flex items-center gap-1.5 shadow-md relative overflow-hidden"
-            >
-              <span className="absolute inset-0 bg-white/20 animate-pulse pointer-events-none"></span>
-              <QrCode className="w-4 h-4 relative z-10" />
-              <span className="relative z-10">Public Verification</span>
-            </button>
-
-            <a href="#lifecycle" className="hover:text-blue-600 transition-colors">
-              Lifecycle
-            </a>
-          </nav>
-
-          {/* Action CTAs */}
-          <div className="flex items-center space-x-2 sm:space-x-3">
-            <button
-              onClick={() => handleSetPortalView("trader")}
-              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-200 shadow-2xs"
-            >
-              <Building2 className="w-4 h-4 text-blue-600" />
-              <span className="hidden sm:inline">Trader Portal</span>
-              <span className="sm:hidden">Trader</span>
-            </button>
-
-            <button
-              onClick={() => handleSetPortalView("lmo")}
-              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors border border-emerald-200 shadow-2xs"
-            >
-              <Shield className="w-4 h-4 text-emerald-600" />
-              <span className="hidden sm:inline">LMO Suite</span>
-              <span className="sm:hidden">LMO</span>
-            </button>
-
-            <button
-              onClick={() => setIsLoginModalOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 rounded-lg shadow-sm hover:shadow transition-all"
-            >
-              <Lock className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Sign In</span>
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Hero Section */}
-      <section className="relative overflow-hidden pt-12 pb-20 bg-gradient-to-b from-blue-50/60 via-slate-50 to-white border-b border-slate-200">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-40 pointer-events-none" />
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="text-center max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-blue-200 shadow-sm text-xs font-semibold text-blue-700 mb-6">
-              <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-              Next-Gen Legal Metrology Verification Architecture
+      {/* Hero Section with Official Portal Theme */}
+      <section className="relative overflow-hidden pt-10 pb-16 bg-gradient-to-b from-blue-50/70 via-slate-50 to-white border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          <div className="max-w-4xl mx-auto space-y-4">
+            {/* National SIH Problem Statement Badge */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#003366]/10 border border-[#003366]/20 text-[#003366] text-xs font-bold shadow-xs">
+              <Scale className="w-4 h-4 text-[#003366]" />
+              <span>Smart India Hackathon (SIH 2026) • Problem Statement ID: 26036</span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-950 tracking-tight leading-[1.15] mb-6">
-              Trust & Transparency in <span className="text-blue-600">Every Measure</span>
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-[#0A2540] tracking-tight leading-[1.15]">
+              National Online Verification & Digital Certification System
             </h1>
 
-            <p className="text-lg sm:text-xl text-slate-600 leading-relaxed mb-8">
-              A unified digital ecosystem connecting instrument registration, field inspector workflows,
-              tamper-proof QR certificates, and continuous lifecycle compliance monitoring.
+            <p className="text-base sm:text-lg text-slate-600 max-w-3xl mx-auto leading-relaxed">
+              Under the <strong>Legal Metrology Act, 2009</strong> and the <strong>Legal Metrology (General) Rules, 2011</strong>, unified online portal for registration, verification application submission, LMO/GATC inspection allocation, QR-enabled digital certification, and validity lifecycle tracking.
             </p>
 
-            {/* Verification & QR Scanner Area */}
-            <div className={`grid grid-cols-1 md:grid-cols-[1.5fr_1fr] gap-4 max-w-4xl mx-auto mb-6 text-left items-stretch transition-all duration-500 rounded-3xl p-3 -mx-3 ${isHighlightingVerify ? 'ring-4 ring-amber-400 bg-amber-50/50 shadow-2xl shadow-amber-200/50 scale-[1.02] z-10 relative' : ''}`}>
-              
-              {/* Quick Public Verification Lookup Bar */}
-              <div className="bg-white p-3 rounded-2xl shadow-xl border border-slate-200/80 flex flex-col h-full">
-                <div className="flex items-center justify-between px-2 pb-2 border-b border-slate-100 text-xs font-semibold text-slate-500">
-                  <span className="flex items-center gap-1.5">
-                    <QrCode className="w-3.5 h-3.5 text-blue-600" />
-                    Instant Public Passport & Certificate Verification
-                  </span>
-                  <span className="text-[11px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded font-mono">
-                    No Login Required
-                  </span>
-                </div>
-
-                <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-2 mt-2">
-                  <div className="relative flex-1">
-                    <Search className="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Enter Instrument ID (e.g. IN-MET-2026-8941) or Certificate Code"
-                      className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all font-mono"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    disabled={isSearching}
-                    className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"
-                  >
-                    {isSearching ? (
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    ) : (
-                      <>
-                        <span>Verify Now</span>
-                        <ArrowRight className="w-4 h-4" />
-                      </>
-                    )}
-                  </button>
-                </form>
-
-                {/* Sample quick tokens for convenience */}
-                <div className="flex flex-wrap items-center gap-2 mt-3 pt-2 text-xs text-slate-500">
-                  <span className="font-medium">Try Sample Passport:</span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSearchQuery("IN-MET-2026-8941");
-                      setSearchResult(samplePassports["IN-MET-2026-8941"]);
-                    }}
-                    className="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono text-[11px] border border-slate-200 transition-colors"
-                  >
-                    IN-MET-2026-8941 (Valid)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSearchQuery("IN-MET-2025-1049");
-                      setSearchResult(samplePassports["IN-MET-2025-1049"]);
-                    }}
-                    className="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono text-[11px] border border-slate-200 transition-colors"
-                  >
-                    IN-MET-2025-1049 (Expired)
-                  </button>
-                </div>
+            {/* Public Quick Verification Lookup Box */}
+            <div id="verification" className="bg-white p-4 sm:p-5 rounded-3xl shadow-xl border border-slate-200/90 max-w-3xl mx-auto text-left mt-6 scroll-mt-28">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 text-xs font-bold text-slate-700">
+                <span className="flex items-center gap-1.5 text-blue-900">
+                  <QrCode className="w-4 h-4 text-blue-600" />
+                  Instant Public Passport & Verification Certificate Search
+                </span>
+                <span className="text-[11px] text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full font-mono border border-emerald-200">
+                  Public Open Access
+                </span>
               </div>
 
-              {/* QR Scanner Action Box */}
-              <button
-                onClick={() => alert("QR Scanner camera interface will be implemented in the backend integration phase.")}
-                className="bg-white p-5 rounded-2xl shadow-xl border border-slate-200/80 flex flex-col items-center justify-center text-center group cursor-pointer hover:border-amber-400 hover:ring-2 hover:ring-amber-200 hover:-translate-y-1 transition-all h-full"
-              >
-                <div className="w-16 h-16 bg-amber-50 rounded-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-sm border border-amber-100">
-                  <Scan className="w-8 h-8 text-amber-600" />
+              <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-2.5 mt-3">
+                <div className="relative flex-1">
+                  <Search className="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Enter Instrument ID (e.g. IN-MET-2026-8941) or Certificate Code..."
+                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent font-mono text-slate-900 transition"
+                  />
                 </div>
-                <h3 className="font-extrabold text-slate-900 mb-1 text-base">Scan QR Code</h3>
-                <p className="text-xs text-slate-500 font-medium px-2 leading-relaxed">
-                  Open your camera to scan a physical instrument QR tag for instant, secure verification.
-                </p>
-                <div className="mt-auto pt-4 w-full">
-                  <div className="px-4 py-2.5 bg-slate-900 text-white text-xs font-bold rounded-xl shadow-md group-hover:bg-amber-500 transition-colors w-full flex justify-center items-center gap-1.5">
-                    <Scan className="w-4 h-4" /> Open Scanner
-                  </div>
-                </div>
-              </button>
+                <button
+                  type="submit"
+                  disabled={isSearching}
+                  className="px-6 py-3 bg-[#003366] hover:bg-[#0A2540] text-white font-bold text-xs sm:text-sm rounded-2xl transition shadow-md flex items-center justify-center gap-2"
+                >
+                  {isSearching ? (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <>
+                      <span>Verify Status</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
+                </button>
+              </form>
+
+              {/* Sample Search Pills */}
+              <div className="flex flex-wrap items-center gap-2 mt-3 pt-2 text-xs text-slate-500 border-t border-slate-100">
+                <span className="font-semibold text-slate-600">Sample Records:</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchQuery("IN-MET-2026-8941");
+                    setSearchResult(samplePassports["IN-MET-2026-8941"]);
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-mono text-[11px] border border-slate-200 font-medium"
+                >
+                  IN-MET-2026-8941 (Valid Scale)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchQuery("IN-MET-2025-1049");
+                    setSearchResult(samplePassports["IN-MET-2025-1049"]);
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-mono text-[11px] border border-slate-200 font-medium"
+                >
+                  IN-MET-2025-1049 (Expired Fuel Unit)
+                </button>
+              </div>
             </div>
 
-            {/* Quick Portal Switcher Pills */}
-            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs text-slate-600">
-              <span className="font-semibold text-slate-700 mr-1">Direct Stakeholder Portals:</span>
+            {/* Quick Stakeholder Switcher Buttons */}
+            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs pt-2">
+              <span className="font-bold text-slate-700 mr-1">Direct Stakeholder Workspaces:</span>
               <button
-                onClick={() => handleSetPortalView("trader")}
-                className="px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 shadow-sm font-bold transition-all flex items-center gap-1 cursor-pointer"
+                onClick={() => setActivePortalView("trader")}
+                className="px-3.5 py-2 rounded-xl bg-blue-50 border border-blue-200 text-blue-900 hover:bg-blue-100 font-bold transition shadow-xs flex items-center gap-1.5 cursor-pointer"
               >
-                🏢 Businessman / Trader Portal →
+                <Building2 className="w-3.5 h-3.5 text-blue-600" />
+                <span>Trader Portal →</span>
               </button>
               <button
-                onClick={() => handleSetPortalView("lmo")}
-                className="px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 shadow-sm font-bold transition-all flex items-center gap-1 cursor-pointer"
+                onClick={() => setActivePortalView("lmo")}
+                className="px-3.5 py-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 hover:bg-emerald-100 font-bold transition shadow-xs flex items-center gap-1.5 cursor-pointer"
               >
-                🛡️ LMO Field Inspector →
+                <Shield className="w-3.5 h-3.5 text-emerald-600" />
+                <span>LMO Field Suite →</span>
               </button>
               <button
-                onClick={() => handleSetPortalView("gatc")}
-                className="px-3 py-1.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 hover:bg-amber-100 shadow-sm font-bold transition-all flex items-center gap-1 cursor-pointer"
+                onClick={() => setActivePortalView("gatc")}
+                className="px-3.5 py-2 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 hover:bg-amber-100 font-bold transition shadow-xs flex items-center gap-1.5 cursor-pointer"
               >
-                ⚖️ GATC Testing Lab →
+                <Scale className="w-3.5 h-3.5 text-amber-700" />
+                <span>GATC Lab Bench →</span>
               </button>
               <button
-                onClick={() => handleSetPortalView("admin")}
-                className="px-3 py-1.5 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100 shadow-sm font-bold transition-all flex items-center gap-1 cursor-pointer"
+                onClick={() => setActivePortalView("admin")}
+                className="px-3.5 py-2 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-900 hover:bg-indigo-100 font-bold transition shadow-xs flex items-center gap-1.5 cursor-pointer"
               >
-                📊 Directorate Admin →
+                <Users className="w-3.5 h-3.5 text-indigo-600" />
+                <span>Directorate Admin →</span>
               </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Verification Result Drawer (if searched) */}
+      {/* Public Search Result Card (if verified) */}
       {searchResult && (
-        <section id="verification" className="py-10 bg-white border-b border-slate-200 scroll-mt-24">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6">
-            <div className="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-800">
+        <section className="py-8 bg-slate-100 border-b border-slate-200">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6">
+            <div className="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-800 space-y-6">
               <div className="flex flex-wrap items-start justify-between gap-4 pb-6 border-b border-slate-800">
                 <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center border border-white/10">
-                    <QrCode className="w-8 h-8 text-emerald-400" />
+                  <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center border border-white/10 shrink-0">
+                    <QrCode className="w-8 h-8 text-amber-400" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2.5">
-                      <h3 className="text-xl sm:text-2xl font-bold tracking-tight">
-                        Digital Instrument Passport
+                      <h3 className="text-xl sm:text-2xl font-bold text-white">
+                        Digital Verification Certificate
                       </h3>
                       {searchResult.status === "VALID" ? (
-                        <span className="inline-flex items-center gap-1.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-semibold px-3 py-1 rounded-full">
-                          <CheckCircle2 className="w-3.5 h-3.5" /> VALID & CERTIFIED
+                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-bold text-xs border border-emerald-400/30">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                          VALID & CERTIFIED
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1.5 bg-red-500/20 text-red-400 border border-red-500/30 text-xs font-semibold px-3 py-1 rounded-full">
-                          <XCircle className="w-3.5 h-3.5" /> RE-VERIFICATION DUE / EXPIRED
+                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 font-bold text-xs border border-rose-400/30">
+                          <XCircle className="w-3.5 h-3.5 text-rose-400" />
+                          RE-VERIFICATION DUE / EXPIRED
                         </span>
                       )}
                     </div>
                     <p className="text-xs text-slate-400 font-mono mt-1">
-                      Passport ID: {searchResult.instrumentId} • Cert ID: {searchResult.certificateId}
+                      Certificate ID: {searchResult.certificateId} • Instrument ID: {searchResult.instrumentId}
                     </p>
                   </div>
                 </div>
 
                 <button
                   onClick={() => setSearchResult(null)}
-                  className="text-xs text-slate-400 hover:text-white px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+                  className="text-xs text-slate-400 hover:text-white px-3 py-1.5 rounded-lg bg-slate-800"
                 >
-                  Close Result
+                  ✕ Close
                 </button>
               </div>
 
-              {/* Passport Specs Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 my-6 text-sm">
-                <div className="bg-white/5 p-4 rounded-xl border border-white/5">
-                  <span className="text-xs text-slate-400 block mb-1">Equipment Category</span>
-                  <span className="font-semibold text-slate-100">{searchResult.type}</span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+                <div className="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700/80">
+                  <span className="text-slate-400 block text-[11px]">Equipment Model</span>
+                  <span className="font-semibold text-white">{searchResult.model}</span>
                 </div>
-                <div className="bg-white/5 p-4 rounded-xl border border-white/5">
-                  <span className="text-xs text-slate-400 block mb-1">Model & Serial No.</span>
-                  <span className="font-semibold text-slate-100">{searchResult.model}</span>
-                  <span className="text-xs text-slate-400 block font-mono mt-0.5">
-                    {searchResult.serialNumber}
-                  </span>
+                <div className="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700/80">
+                  <span className="text-slate-400 block text-[11px]">Serial Number</span>
+                  <span className="font-mono font-bold text-white">{searchResult.serialNumber}</span>
                 </div>
-                <div className="bg-white/5 p-4 rounded-xl border border-white/5">
-                  <span className="text-xs text-slate-400 block mb-1">Registered Owner</span>
-                  <span className="font-semibold text-slate-100">{searchResult.owner}</span>
+                <div className="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700/80">
+                  <span className="text-slate-400 block text-[11px]">Accuracy & Max Cap</span>
+                  <span className="font-semibold text-white">{searchResult.maxCapacity} ({searchResult.accuracyClass})</span>
                 </div>
-                <div className="bg-white/5 p-4 rounded-xl border border-white/5">
-                  <span className="text-xs text-slate-400 block mb-1">Validity Period</span>
-                  <span className="font-semibold text-emerald-400 font-mono">
-                    {searchResult.verifiedAt} → {searchResult.validUntil}
+                <div className="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700/80">
+                  <span className="text-slate-400 block text-[11px]">Certificate Validity</span>
+                  <span className={`font-bold ${searchResult.status === "VALID" ? "text-emerald-400" : "text-rose-400"}`}>
+                    Till {searchResult.validUntil}
                   </span>
                 </div>
               </div>
 
-              {/* Security & Inspection Details */}
-              <div className="bg-white/5 rounded-2xl p-4 border border-white/5 flex flex-wrap items-center justify-between gap-4 text-xs">
-                <div className="flex items-center gap-3">
-                  <MapPin className="w-4 h-4 text-blue-400 flex-shrink-0" />
-                  <span className="text-slate-300">
-                    <strong className="text-white">Location:</strong> {searchResult.location}
-                  </span>
+              <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+                <div>
+                  <span className="text-slate-400 block text-[10px]">REGISTERED USER PREMISES</span>
+                  <span className="font-medium text-slate-200">{searchResult.owner} • {searchResult.location}</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <Shield className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                  <span className="text-slate-300">
-                    <strong className="text-white">Inspecting Authority:</strong> {searchResult.verifiedBy}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="px-2.5 py-1 rounded bg-blue-500/20 text-blue-300 font-mono">
-                    Cap: {searchResult.maxCapacity}
-                  </span>
-                  <span className="px-2.5 py-1 rounded bg-purple-500/20 text-purple-300 font-mono">
-                    {searchResult.accuracyClass}
-                  </span>
+                <div className="text-right">
+                  <span className="text-slate-400 block text-[10px]">VERIFIED BY INSPECTOR</span>
+                  <span className="font-semibold text-amber-300">{searchResult.verifiedBy}</span>
                 </div>
               </div>
             </div>
@@ -815,345 +503,179 @@ export default function LandingPage() {
         </section>
       )}
 
-      {/* Stakeholder Login Portal Section */}
-      <section id="portals" className="py-20 bg-white border-b border-slate-200">
+      {/* 4 Core Stakeholder Portals Showcase */}
+      <section id="registration" className="py-14 bg-white border-b border-slate-200 scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-14">
-            <span className="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
-              Role-Based Authentication Access
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-950 mt-3 tracking-tight">
-              Unified Portal for All Metrology Stakeholders
-            </h2>
-            <p className="text-slate-600 mt-3 text-base">
-              Select your organization or regulatory capacity to access tailored workflows, field apps, and dashboards.
-            </p>
+          <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-4 mb-10">
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-800 text-xs font-bold border border-blue-200 mb-2">
+                <Users className="w-3.5 h-3.5 text-blue-600" />
+                Role-Based Stakeholder Portals
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0A2540] tracking-tight">
+                Unified Portal Access for All Stakeholders
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-2xl">
+                Dedicated digital interfaces tailored for commercial instrument users, state inspection officers, accredited laboratories, and central regulators.
+              </p>
+            </div>
+
+            <button
+              onClick={() => setIsRegModalOpen(true)}
+              className="px-5 py-2.5 rounded-xl bg-[#003366] hover:bg-[#0A2540] text-white font-bold text-xs sm:text-sm shadow-md transition flex items-center gap-2"
+            >
+              <UserCheck className="w-4 h-4" />
+              <span>New Stakeholder Registration</span>
+            </button>
           </div>
 
           {/* 4 Stakeholder Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {(Object.keys(roleDetails) as RoleType[]).map((roleKey) => {
               const role = roleDetails[roleKey];
               const Icon = role.icon;
-              const isSelected = selectedRole === roleKey;
-
               return (
                 <div
                   key={roleKey}
-                  onClick={() => openLoginForRole(roleKey as RoleType)}
-                  className={`cursor-pointer rounded-2xl p-6 transition-all border-2 text-left relative flex flex-col justify-between ${
-                    isSelected
-                      ? "border-blue-600 bg-blue-50/40 shadow-lg ring-2 ring-blue-600/20"
-                      : "border-slate-200 bg-white hover:border-slate-300 hover:shadow-md"
-                  }`}
+                  className="bg-slate-50 rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between hover:border-blue-300 hover:shadow-md transition space-y-4"
                 >
-                  {isSelected && (
-                    <span className="absolute -top-3 right-4 bg-blue-600 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-sm">
-                      Selected Role
-                    </span>
-                  )}
-
-                  <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <div
-                        className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                          isSelected ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-700"
-                        }`}
-                      >
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className={`p-3 rounded-xl ${role.accentBg} ${role.color}`}>
                         <Icon className="w-6 h-6" />
                       </div>
-                      <span className="text-[11px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200">
                         {role.badge}
                       </span>
                     </div>
 
-                    <h3 className="font-bold text-lg text-slate-900 leading-snug">{role.title}</h3>
-                    <p className="text-xs text-slate-500 font-medium mt-1 mb-4">{role.subtitle}</p>
-                    <p className="text-xs text-slate-600 line-clamp-3 leading-relaxed mb-4">
+                    <div>
+                      <h3 className="font-bold text-base text-slate-900 leading-snug">{role.title}</h3>
+                      <p className="text-[11px] text-slate-500 font-medium">{role.subtitle}</p>
+                    </div>
+
+                    <p className="text-xs text-slate-600 leading-relaxed line-clamp-3">
                       {role.description}
                     </p>
+
+                    <div className="space-y-1.5 pt-2 border-t border-slate-200/80">
+                      {role.capabilities.slice(0, 3).map((cap, i) => (
+                        <div key={i} className="flex items-start gap-1.5 text-[11px] text-slate-700">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                          <span className="line-clamp-1">{cap}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
 
-                  {roleKey === "businessman" ? (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openLoginForRole("businessman");
-                      }}
-                      className="w-full py-2.5 rounded-xl font-bold text-xs bg-[#1A56DB] text-white hover:bg-blue-700 shadow-sm transition-colors flex items-center justify-center gap-1.5"
-                    >
-                      <span>Sign In as Businessman</span>
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  ) : roleKey === "lmo" ? (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openLoginForRole("lmo");
-                      }}
-                      className="w-full py-2.5 rounded-xl font-bold text-xs bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm transition-colors flex items-center justify-center gap-1.5"
-                    >
-                      <span>Sign In as LMO</span>
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  ) : roleKey === "gatc" ? (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setActivePortalView("gatc");
-                      }}
-                      className="w-full py-2.5 rounded-xl font-bold text-xs bg-amber-600 text-white hover:bg-amber-700 shadow-sm transition-colors flex items-center justify-center gap-1.5"
-                    >
-                      <span>Open GATC Testing Lab</span>
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  ) : (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setActivePortalView("admin");
-                      }}
-                      className="w-full py-2.5 rounded-xl font-bold text-xs bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm transition-colors flex items-center justify-center gap-1.5"
-                    >
-                      <span>Open Directorate Admin</span>
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  )}
+                  <div className="pt-2">
+                    {roleKey === "businessman" ? (
+                      <button
+                        onClick={() => setActivePortalView("trader")}
+                        className="w-full py-2.5 rounded-xl font-bold text-xs bg-[#003366] text-white hover:bg-[#0A2540] shadow-sm transition flex items-center justify-center gap-1.5"
+                      >
+                        <span>Open Trader Portal</span>
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    ) : roleKey === "lmo" ? (
+                      <button
+                        onClick={() => setActivePortalView("lmo")}
+                        className="w-full py-2.5 rounded-xl font-bold text-xs bg-emerald-700 text-white hover:bg-emerald-800 shadow-sm transition flex items-center justify-center gap-1.5"
+                      >
+                        <span>Open LMO Officer Suite</span>
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    ) : roleKey === "gatc" ? (
+                      <button
+                        onClick={() => setActivePortalView("gatc")}
+                        className="w-full py-2.5 rounded-xl font-bold text-xs bg-amber-600 text-slate-950 hover:bg-amber-700 shadow-sm transition flex items-center justify-center gap-1.5"
+                      >
+                        <span>Open GATC Testing Lab</span>
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => setActivePortalView("admin")}
+                        className="w-full py-2.5 rounded-xl font-bold text-xs bg-indigo-700 text-white hover:bg-indigo-800 shadow-sm transition flex items-center justify-center gap-1.5"
+                      >
+                        <span>Open Directorate Admin</span>
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               );
             })}
           </div>
-
-          {/* Interactive Role Login Preview Pane MODAL */}
-          {isLoginModalOpen && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
-              <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setIsLoginModalOpen(false)}></div>
-              
-              <div className="bg-slate-50 rounded-3xl p-6 sm:p-10 border border-slate-200 shadow-2xl relative max-w-5xl w-full max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
-                <button
-                  onClick={() => setIsLoginModalOpen(false)}
-                  className="absolute top-4 right-4 p-2 bg-slate-200 hover:bg-red-100 hover:text-red-600 text-slate-700 rounded-full transition-colors z-10 shadow-sm"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-                  {/* Left Column: Role Details & Permissions */}
-                  <div className="lg:col-span-7 space-y-6">
-                    <div className="flex items-center gap-3">
-                      <div className={`p-3 rounded-2xl ${activeRoleData.accentBg}`}>
-                        <ActiveRoleIcon className={`w-8 h-8 ${activeRoleData.color}`} />
-                      </div>
-                      <div>
-                        <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                          Active Portal Selected
-                        </span>
-                        <h3 className="text-2xl font-extrabold text-slate-900">{activeRoleData.title}</h3>
-                      </div>
-                    </div>
-
-                    <p className="text-sm text-slate-600 leading-relaxed">
-                      {activeRoleData.description}
-                    </p>
-
-                    {/* Security Prototype Warning */}
-                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3 mt-4">
-                      <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
-                      <div>
-                        <h4 className="text-sm font-semibold text-amber-800">Prototype Authentication</h4>
-                        <p className="text-xs text-amber-700 mt-1 leading-relaxed">
-                          This is a frontend UI prototype. Login credentials are not securely verified. 
-                          <strong className="block mt-1">Pending: Supabase PostgreSQL integration for secure authentication and Row Level Security (RLS).</strong>
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2.5">
-                      <span className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
-                        Key Role Capabilities & Workflows:
-                      </span>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                        {activeRoleData.capabilities.map((cap, idx) => (
-                          <div
-                            key={idx}
-                            className="flex items-start gap-2 bg-white p-3 rounded-xl border border-slate-200/80 text-slate-700 font-medium"
-                          >
-                            <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
-                            <span>{cap}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Right Column: Interactive Login UI Form */}
-                  <div className="lg:col-span-5">
-                    <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-lg">
-                      <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
-                        <div>
-                          <h4 className="font-bold text-slate-900 text-base">Stakeholder Portal Sign In</h4>
-                          <p className="text-xs text-slate-500">SIH 26036 Single Sign-On Access</p>
-                        </div>
-                        <span className="text-[10px] font-bold px-2 py-1 bg-slate-100 text-slate-700 rounded-md">
-                          {selectedRole.toUpperCase()}
-                        </span>
-                      </div>
-
-                      <form
-                        onSubmit={(e) => {
-                          e.preventDefault();
-                          setIsLoginModalOpen(false);
-                          handleAuthenticate(selectedRole);
-                        }}
-                        className="space-y-4 text-left"
-                      >
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                            {activeRoleData.sampleIdLabel} or Official Email
-                          </label>
-                          <div className="relative">
-                            <input
-                              type="text"
-                              defaultValue={activeRoleData.sampleEmail}
-                              className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent font-mono text-xs"
-                              placeholder="e.g. user@organization.gov.in"
-                              required
-                            />
-                          </div>
-                        </div>
-
-                        <div>
-                          <div className="flex items-center justify-between mb-1.5">
-                            <label className="block text-xs font-semibold text-slate-700">
-                              Password / Security PIN
-                            </label>
-                            <a href="#" className="text-[11px] font-semibold text-blue-600 hover:underline">
-                              Forgot?
-                            </a>
-                          </div>
-                          <input
-                            type="password"
-                            defaultValue="••••••••••••"
-                            className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                            required
-                          />
-                        </div>
-
-                        <div className="flex items-center justify-between text-xs text-slate-600 pt-1">
-                          <label className="flex items-center gap-2 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              defaultChecked
-                              className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                            />
-                            <span>Remember credentials</span>
-                          </label>
-                          <span className="text-[11px] text-slate-400 font-mono">2FA / OTP Enabled</span>
-                        </div>
-
-                        <button
-                          type="submit"
-                          className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
-                        >
-                          <Lock className="w-4 h-4" />
-                          <span>Authenticate & Open Workspace</span>
-                        </button>
-
-                        <div className="text-center pt-2">
-                          <p className="text-[11px] text-slate-500">
-                            Need registration or test certificate assistance?{" "}
-                            <a href="#help" className="text-blue-600 font-semibold hover:underline">
-                              Contact Helpdesk
-                            </a>
-                          </p>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-          )}
         </div>
       </section>
 
-      {/* 5-Step Ecosystem Lifecycle Workflow */}
-      <section id="lifecycle" className="py-20 bg-slate-900 text-white">
+      {/* Online Workflow & Lifecycle Management Infographic */}
+      <section id="workflow" className="py-14 bg-slate-50 border-b border-slate-200 scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="text-xs font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
-              End-to-End Operational Pipeline
+          <div className="text-center max-w-3xl mx-auto mb-12 space-y-2">
+            <span className="text-xs font-bold text-blue-700 uppercase tracking-wider">
+              Statutory Lifecycle Management
             </span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-3 tracking-tight">
-              The Digital Instrument Passport Lifecycle
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0A2540]">
+              End-to-End Online Verification Workflow
             </h2>
-            <p className="text-slate-400 mt-3 text-base">
-              One Instrument → One Digital Passport → Multi-Verification History → Trusted e-Certificate → <span className="whitespace-nowrap">Public Verification</span>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              Standardized digital process replacing manual physical stamping ledgers under Rule 11 of the Legal Metrology (General) Rules, 2011.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 relative">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {[
               {
                 step: "01",
-                title: "Instrument Registration",
-                desc: "Business/owner registers instrument details, serial number, accuracy class, capacity, and operational location.",
-                icon: FileText,
-                badge: "Merchant",
+                title: "Stakeholder Registration",
+                desc: "Traders, LMOs, and GATCs register online with GSTIN, Badge, or NABL accreditation.",
+                icon: UserCheck,
               },
               {
                 step: "02",
-                title: "Digital Passport Created",
-                desc: "System generates persistent Instrument ID, QR identity chip, and immutable chronological lifecycle history.",
-                icon: QrCode,
-                badge: "System Core",
+                title: "Verification Application",
+                desc: "Submit instrument specifications, TAC approval, location, and preferred testing mode.",
+                icon: FileText,
               },
               {
                 step: "03",
-                title: "Smart Field Inspection",
-                desc: "LMO executes standardized checklists on mobile, capturing live photos, seal integrity, GPS geotags & readings.",
-                icon: Smartphone,
-                badge: "LMO Field",
+                title: "Smart Allocation",
+                desc: "System assigns visit to jurisdictional LMO or GATC testing center with appointment slot.",
+                icon: Layers,
               },
               {
                 step: "04",
-                title: "Cryptographic e-Cert",
-                desc: "Upon approval, an idempotent, tamper-proof PDF certificate with server-verified QR token is generated.",
-                icon: Award,
-                badge: "Issuing Authority",
+                title: "Digital Observation",
+                desc: "Inspector records load tests, MPE error calculations, and GPS seal evidence photos.",
+                icon: Smartphone,
               },
               {
                 step: "05",
-                title: "Lifecycle Monitoring",
-                desc: "Automated validity tracking, re-verification reminders, public QR scans, and state-wide pendency oversight.",
-                icon: Clock,
-                badge: "Continuous",
+                title: "QR e-Certificate",
+                desc: "Instant generation of verifiable cryptographic certificate with unique QR code stamp.",
+                icon: QrCode,
               },
-            ].map((stage, idx) => {
-              const StageIcon = stage.icon;
+              {
+                step: "06",
+                title: "Automated Renewal",
+                desc: "30-day & 15-day proactive alerts and reminders before annual validity expiration.",
+                icon: Clock,
+              },
+            ].map((st) => {
+              const Icon = st.icon;
               return (
                 <div
-                  key={idx}
-                  className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col justify-between hover:bg-white/10 transition-all group"
+                  key={st.step}
+                  className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2 relative group hover:border-blue-400 transition"
                 >
-                  <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="font-mono text-2xl font-black text-blue-400">
-                        {stage.step}
-                      </span>
-                      <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-white/10 text-slate-300">
-                        {stage.badge}
-                      </span>
-                    </div>
-
-                    <div className="w-10 h-10 rounded-xl bg-blue-600/20 text-blue-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                      <StageIcon className="w-5 h-5" />
-                    </div>
-
-                    <h3 className="font-bold text-base text-white mb-2">{stage.title}</h3>
-                    <p className="text-xs text-slate-400 leading-relaxed">{stage.desc}</p>
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-lg font-black text-blue-700">{st.step}</span>
+                    <Icon className="w-5 h-5 text-slate-400 group-hover:text-blue-600 transition" />
                   </div>
+                  <h4 className="font-bold text-slate-900 text-xs sm:text-sm">{st.title}</h4>
+                  <p className="text-[11px] text-slate-500 leading-relaxed">{st.desc}</p>
                 </div>
               );
             })}
@@ -1161,154 +683,149 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Key National Metrics & Governance Stats */}
-      <section className="py-16 bg-white border-b border-slate-200">
+      {/* Statutory Act, Rules & Standards Reference Section */}
+      <section id="standards" className="py-14 bg-white border-b border-slate-200 scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
-            <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200/80">
-              <span className="text-3xl sm:text-4xl font-extrabold text-blue-600 font-mono block mb-1">
-                480,000+
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
+            <div>
+              <span className="text-xs font-bold text-amber-700 uppercase tracking-wider">
+                Regulatory Framework
               </span>
-              <span className="text-xs font-semibold text-slate-600">
-                Verified Digital Passports Issued
-              </span>
-            </div>
-            <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200/80">
-              <span className="text-3xl sm:text-4xl font-extrabold text-emerald-600 font-mono block mb-1">
-                99.8%
-              </span>
-              <span className="text-xs font-semibold text-slate-600">
-                Metrological Compliance Rate
-              </span>
-            </div>
-            <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200/80">
-              <span className="text-3xl sm:text-4xl font-extrabold text-indigo-600 font-mono block mb-1">
-                18,400+
-              </span>
-              <span className="text-xs font-semibold text-slate-600">
-                Active Legal Metrology Officers
-              </span>
-            </div>
-            <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200/80">
-              <span className="text-3xl sm:text-4xl font-extrabold text-amber-600 font-mono block mb-1">
-                &lt; 1.5s
-              </span>
-              <span className="text-xs font-semibold text-slate-600">
-                Public QR Certificate Lookup Speed
-              </span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Compliance & Standards Section */}
-      <section id="standards" className="py-20 bg-slate-50 border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            <div className="lg:col-span-6 space-y-6">
-              <span className="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-100 px-3 py-1 rounded-full">
-                Regulatory Standards
-              </span>
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-950 tracking-tight">
-                Engineered for Legal Metrology Act & OIML Compliance
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0A2540]">
+                Legal Metrology Act, 2009 Statutory Mandates
               </h2>
-              <p className="text-slate-600 text-sm leading-relaxed">
-                Built strictly to adhere to the Legal Metrology Act, 2009, Legal Metrology (General) Rules,
-                and International Organization of Legal Metrology (OIML) guidelines.
-              </p>
+            </div>
 
-              <div className="space-y-3">
-                {[
-                  {
-                    title: "Immutable Digital Passport",
-                    desc: "Every scale, flow meter, and weight standard has a persistent unique ID that prevents duplicate or fraudulent records.",
-                  },
-                  {
-                    title: "Geotagged & Timestamped Inspection Evidence",
-                    desc: "Photographic proof of calibration seals, stamping, and laboratory master tests are sealed cryptographically.",
-                  },
-                  {
-                    title: "Public Instant Trust Verification",
-                    desc: "Consumers and merchants can scan any instrument’s QR code to confirm official validity, inspector stamp, and expiry date.",
-                  },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-start gap-3 bg-white p-4 rounded-xl border border-slate-200">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <h4 className="text-sm font-bold text-slate-900">{item.title}</h4>
-                      <p className="text-xs text-slate-500 mt-0.5">{item.desc}</p>
-                    </div>
-                  </div>
-                ))}
+            <div className="flex items-center gap-2 text-xs">
+              <span className="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 font-bold border border-slate-200">
+                General Rules, 2011
+              </span>
+              <span className="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 font-bold border border-blue-200">
+                OIML International Standards
+              </span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-3">
+              <div className="flex items-center gap-2 text-blue-900 font-bold text-sm">
+                <FileCheck2 className="w-5 h-5 text-blue-600" />
+                <span>Section 24: Verification & Stamping</span>
+              </div>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Every person having in his possession or custody any weight or measure for use in any commercial transaction or protection shall get it verified and stamped periodically before putting it into use.
+              </p>
+              <div className="text-[11px] font-mono text-slate-500 font-semibold">
+                Penalty: Section 30 fine up to ₹10,000/-
               </div>
             </div>
 
-            <div className="lg:col-span-6">
-              <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl relative overflow-hidden">
-                <div className="flex items-center justify-between pb-6 border-b border-slate-100">
-                  <div className="flex items-center gap-3">
-                    <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-slate-200">
-                      <Image src="/logo.jpg" alt="DigiPass" fill className="object-contain" />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-slate-900 text-sm">Official Legal Metrology Seal</h4>
-                      <p className="text-[11px] text-slate-500">Government of India Standard</p>
-                    </div>
-                  </div>
-                  <span className="text-xs font-mono font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-                    ✓ VALIDATED
-                  </span>
-                </div>
+            <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-3">
+              <div className="flex items-center gap-2 text-emerald-900 font-bold text-sm">
+                <Award className="w-5 h-5 text-emerald-600" />
+                <span>Rule 11: Certificate of Verification</span>
+              </div>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                The Legal Metrology Officer shall issue a certificate of verification in Schedule VIII to the person whose weight or measure has been verified, containing the period of validity, user premises, and seal identification.
+              </p>
+              <div className="text-[11px] font-mono text-slate-500 font-semibold">
+                Digital e-Certificate with Tamper-Evident QR
+              </div>
+            </div>
 
-                <div className="py-6 space-y-4 text-xs">
-                  <div className="flex justify-between items-center py-2 border-b border-slate-50">
-                    <span className="text-slate-500 font-medium">Standard Compliance:</span>
-                    <span className="font-bold text-slate-900">SIH 26036 / LM General Rules 2011</span>
-                  </div>
-                  <div className="flex justify-between items-center py-2 border-b border-slate-50">
-                    <span className="text-slate-500 font-medium">Cryptographic Security:</span>
-                    <span className="font-bold text-slate-900">SHA-256 Tamper-Evident QR Token</span>
-                  </div>
-                  <div className="flex justify-between items-center py-2 border-b border-slate-50">
-                    <span className="text-slate-500 font-medium">Accessibility Standard:</span>
-                    <span className="font-bold text-slate-900">WCAG 2.2 AA Certified Layout</span>
-                  </div>
-                  <div className="flex justify-between items-center py-2">
-                    <span className="text-slate-500 font-medium">Audit Record Retention:</span>
-                    <span className="font-bold text-slate-900">Permanent Lifecycle History</span>
-                  </div>
-                </div>
-
-                <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 flex items-center gap-3 text-xs text-blue-900">
-                  <Info className="w-4 h-4 text-blue-600 flex-shrink-0" />
-                  <span>
-                    All verification operations are logged with officer ID, geolocation, timestamp, and verification photos.
-                  </span>
-                </div>
+            <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-3">
+              <div className="flex items-center gap-2 text-rose-900 font-bold text-sm">
+                <Shield className="w-5 h-5 text-rose-600" />
+                <span>Section 15: Inspection & Seizure</span>
+              </div>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Authorized officers may enter premises, inspect records, test working standards, and seize non-verified, un-stamped, or short-delivering measuring instruments used in trade.
+              </p>
+              <div className="text-[11px] font-mono text-slate-500 font-semibold">
+                Section 27 Compounding Penalties Applicable
               </div>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Citizen FAQ & Grievance Redressal */}
+      <section id="faq" className="py-14 bg-slate-50 border-b border-slate-200 scroll-mt-20">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-10 space-y-1">
+            <span className="text-xs font-bold text-blue-700 uppercase tracking-wider">
+              Frequently Asked Questions
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0A2540]">
+              Citizen & Stakeholder Helpdesk
+            </h2>
+          </div>
+
+          <div className="space-y-4 text-xs sm:text-sm">
+            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2">
+              <h4 className="font-bold text-slate-900 flex items-center gap-2">
+                <HelpCircle className="w-4 h-4 text-blue-600" />
+                How often must a commercial weighing scale be re-verified?
+              </h4>
+              <p className="text-slate-600 pl-6 leading-relaxed">
+                Under the Legal Metrology (General) Rules, 2011, standard commercial counter scales, electronic weighing machines, and petrol/diesel dispensing units must be re-verified <strong>annually (every 12 months)</strong>. High precision weights and bullion balances follow statutory state schedule cycles.
+              </p>
+            </div>
+
+            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2">
+              <h4 className="font-bold text-slate-900 flex items-center gap-2">
+                <HelpCircle className="w-4 h-4 text-blue-600" />
+                How do consumers verify whether a weighing scale or fuel dispenser is genuine?
+              </h4>
+              <p className="text-slate-600 pl-6 leading-relaxed">
+                Every verified instrument bears a physical seal tag and a QR code Certificate sticker. Citizens can scan the QR code using any smartphone or enter the Instrument ID in the public verification search box above to confirm validity and last stamping details.
+              </p>
+            </div>
+
+            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2">
+              <h4 className="font-bold text-slate-900 flex items-center gap-2">
+                <HelpCircle className="w-4 h-4 text-blue-600" />
+                What is the procedure if a physical seal is accidentally damaged?
+              </h4>
+              <p className="text-slate-600 pl-6 leading-relaxed">
+                Traders can log in to the <strong>Businessman Portal</strong>, select the instrument, and submit an <strong>Emergency Seal Damage Report</strong> within 24 hours. The instrument is isolated from trade, and an expedited re-verification inspection is scheduled with the jurisdictional LMO.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Official Government Footer */}
+      <GovFooter />
+
+      {/* Stakeholder Registration Modal */}
+      <StakeholderRegistrationModal
+        isOpen={isRegModalOpen}
+        onClose={() => setIsRegModalOpen(false)}
+        onSuccess={(role, name) => {
+          alert(`Stakeholder Registration successfully completed for ${name} (${role.toUpperCase()}). You can now access your dashboard.`);
+          handleAuthenticate(role);
+        }}
+      />
 
       {/* Stakeholder Login Modal */}
       {isLoginModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative">
             <button
               onClick={() => setIsLoginModalOpen(false)}
-              className="absolute top-6 right-6 text-slate-400 hover:text-slate-700 w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center transition-colors"
+              className="absolute top-6 right-6 text-slate-400 hover:text-slate-700 w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold transition"
             >
               ✕
             </button>
 
             <div className="flex items-center gap-3 mb-6">
-              <div className="relative w-10 h-10 rounded-xl overflow-hidden border border-slate-200 flex-shrink-0">
+              <div className="relative w-12 h-12 rounded-xl overflow-hidden border border-slate-200 bg-white p-1 flex-shrink-0">
                 <Image src="/logo.jpg" alt="DigiPass" fill className="object-contain" />
               </div>
               <div>
-                <h3 className="font-extrabold text-xl text-slate-900">Stakeholder Portal Sign In</h3>
-                <p className="text-xs text-slate-500">Select your access role to continue</p>
+                <h3 className="font-extrabold text-lg text-slate-900">Stakeholder Single Sign-On</h3>
+                <p className="text-xs text-slate-500">Legal Metrology National Portal</p>
               </div>
             </div>
 
@@ -1322,13 +839,13 @@ export default function LandingPage() {
                     key={r}
                     type="button"
                     onClick={() => setSelectedRole(r)}
-                    className={`p-3 rounded-xl border text-left transition-all flex items-center gap-2.5 ${
+                    className={`p-3 rounded-xl border text-left transition flex items-center gap-2.5 ${
                       isRSelected
-                        ? "bg-blue-50 border-blue-600 text-blue-900 font-bold"
+                        ? "bg-[#003366] border-[#003366] text-white font-bold"
                         : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 text-xs font-semibold"
                     }`}
                   >
-                    <Icon className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                    <Icon className={`w-4 h-4 ${isRSelected ? "text-amber-400" : "text-slate-500"}`} />
                     <span className="truncate text-xs">{roleDetails[r].title.split(" ")[0]}</span>
                   </button>
                 );
@@ -1345,145 +862,70 @@ export default function LandingPage() {
               className="space-y-4"
             >
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  {roleDetails[selectedRole].sampleIdLabel} / Username
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  {roleDetails[selectedRole].sampleIdLabel} / Official Email
                 </label>
                 <input
                   type="text"
                   defaultValue={roleDetails[selectedRole].sampleEmail}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 font-mono"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Password
-                </label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs font-bold text-slate-700">
+                    Security Password / PIN
+                  </label>
+                  <a href="#" className="text-[11px] font-semibold text-blue-700 hover:underline">
+                    Forgot?
+                  </a>
+                </div>
                 <input
                   type="password"
-                  defaultValue="password123"
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  defaultValue="••••••••••••"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
                   required
                 />
               </div>
 
-              <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 text-[11px] text-slate-600">
-                <span className="font-semibold text-slate-800">Demo Role:</span> {roleDetails[selectedRole].title}
-                <br />
-                <span className="text-slate-500 font-mono">Sample ID: {roleDetails[selectedRole].sampleIdVal}</span>
+              <div className="flex items-center justify-between text-xs text-slate-600 pt-1">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    defaultChecked
+                    className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span>Remember session</span>
+                </label>
+                <span className="text-[11px] text-slate-400 font-mono">DoCA 2FA Protected</span>
               </div>
 
               <button
                 type="submit"
-                className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
+                className="w-full py-3 bg-[#003366] hover:bg-[#0A2540] text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition flex items-center justify-center gap-2"
               >
                 <Lock className="w-4 h-4" />
-                <span>Enter {roleDetails[selectedRole].title.split(" ")[0]} Dashboard</span>
+                <span>Authenticate & Open Workspace</span>
               </button>
+
+              <div className="text-center pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsLoginModalOpen(false);
+                    setIsRegModalOpen(true);
+                  }}
+                  className="text-xs text-blue-700 hover:underline font-bold"
+                >
+                  Don&apos;t have an account? Register as New Stakeholder →
+                </button>
+              </div>
             </form>
           </div>
         </div>
       )}
-
-      {/* Official Footer */}
-      <footer className="mt-auto bg-slate-950 text-slate-400 text-xs border-t border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-8 border-b border-slate-800">
-            <div className="space-y-3">
-              <div className="flex items-center space-x-3">
-                <div className="relative w-8 h-8 rounded-lg overflow-hidden bg-white p-0.5">
-                  <Image src="/logo.jpg" alt="DigiPass" fill className="object-contain" />
-                </div>
-                <span className="font-bold text-white text-lg tracking-tight font-mono">
-                  Digi<span className="text-blue-500">Pass</span>
-                </span>
-              </div>
-              <p className="text-slate-400 text-xs leading-relaxed">
-                National Legal Metrology Digital Verification Ecosystem for Weighing & Measuring Instruments (SIH 26036).
-              </p>
-            </div>
-
-            <div>
-              <h4 className="text-white font-bold text-xs uppercase tracking-wider mb-3">
-                Stakeholder Portals
-              </h4>
-              <ul className="space-y-2 text-xs">
-                <li>
-                  <button onClick={() => handleSetPortalView("trader")} className="hover:text-white text-left">
-                    Businessman & Trader Portal
-                  </button>
-                </li>
-                <li>
-                  <button onClick={() => handleSetPortalView("lmo")} className="hover:text-white text-left">
-                    Legal Metrology Officer (LMO)
-                  </button>
-                </li>
-                <li>
-                  <button onClick={() => openLoginForRole("gatc")} className="hover:text-white">
-                    Govt Approved Test Center (GATC)
-                  </button>
-                </li>
-                <li>
-                  <button onClick={() => openLoginForRole("admin")} className="hover:text-white">
-                    Central & State Regulators
-                  </button>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="text-white font-bold text-xs uppercase tracking-wider mb-3">
-                Public Services
-              </h4>
-              <ul className="space-y-2 text-xs">
-                <li>
-                  <a href="#verification" className="hover:text-white">
-                    Public QR Certificate Verify
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white">
-                    Instrument Type Approval Catalog
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white">
-                    Fee Structure & Metrology Norms
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white">
-                    Grievance & Tampering Redressal
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="text-white font-bold text-xs uppercase tracking-wider mb-3">
-                Contact & Support
-              </h4>
-              <p className="text-xs text-slate-400 leading-relaxed mb-2">
-                Toll-Free National Helpline: <span className="text-white font-semibold">1800-11-4000</span>
-              </p>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Email: <span className="text-white font-semibold">support.metrology@gov.in</span>
-              </p>
-            </div>
-          </div>
-
-          <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-500">
-            <p>© 2026 Legal Metrology Division • SIH 26036 Ecosystem. All rights reserved.</p>
-            <div className="flex items-center space-x-4">
-              <a href="#" className="hover:text-slate-300">Privacy Policy</a>
-              <a href="#" className="hover:text-slate-300">Terms of Service</a>
-              <a href="#" className="hover:text-slate-300">WCAG 2.2 AA Accessibility</a>
-              <a href="#" className="hover:text-slate-300">Security Audit</a>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
