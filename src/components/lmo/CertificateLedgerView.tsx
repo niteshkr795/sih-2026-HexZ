@@ -54,52 +54,52 @@ export const CertificateLedgerView: React.FC<CertificateLedgerViewProps> = ({
     <div className="space-y-6 animate-in fade-in duration-200">
       {/* Top Stat Summary Header */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
-        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center justify-between">
+        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-card flex items-center justify-between">
           <div>
-            <span className="text-slate-500 font-medium block">Total Valid e-Certificates</span>
-            <span className="text-2xl font-black text-slate-900 font-mono mt-0.5 block">
+            <span className="text-slate-500 font-semibold block">Total Valid e-Certificates</span>
+            <span className="text-2xl font-bold text-slate-900 font-mono tabular-nums tracking-tight mt-1 block">
               {certificates.length}
             </span>
-            <span className="text-[11px] text-emerald-600 font-semibold">Active in Territory</span>
+            <span className="text-[11px] text-emerald-600 font-medium mt-0.5 block">Active in Territory</span>
           </div>
           <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
             <FileCheck2 className="w-5 h-5" />
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center justify-between">
+        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-card flex items-center justify-between">
           <div>
-            <span className="text-slate-500 font-medium block">Form VIII Seizures Executed</span>
-            <span className="text-2xl font-black text-red-600 font-mono mt-0.5 block">
+            <span className="text-slate-500 font-semibold block">Form VIII Seizures Executed</span>
+            <span className="text-2xl font-bold text-red-600 font-mono tabular-nums tracking-tight mt-1 block">
               {seizureNotices.length}
             </span>
-            <span className="text-[11px] text-red-600 font-semibold">Stop-Use Orders</span>
+            <span className="text-[11px] text-red-600 font-medium mt-0.5 block">Stop-Use Orders</span>
           </div>
           <div className="w-10 h-10 rounded-xl bg-red-50 text-red-600 flex items-center justify-center">
             <AlertOctagon className="w-5 h-5" />
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center justify-between">
+        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-card flex items-center justify-between">
           <div>
-            <span className="text-slate-500 font-medium block">Govt Stamping Fees Deposited</span>
-            <span className="text-2xl font-black text-blue-600 font-mono mt-0.5 block">
+            <span className="text-slate-500 font-semibold block">Govt Stamping Fees Deposited</span>
+            <span className="text-2xl font-bold text-blue-700 font-mono tabular-nums tracking-tight mt-1 block">
               ₹{totalFees.toLocaleString("en-IN")}
             </span>
-            <span className="text-[11px] text-blue-600 font-semibold">Treasury Reconciled</span>
+            <span className="text-[11px] text-blue-600 font-medium mt-0.5 block">Treasury Reconciled</span>
           </div>
           <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
             <ShieldCheck className="w-5 h-5" />
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center justify-between">
+        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-card flex items-center justify-between">
           <div>
-            <span className="text-slate-500 font-medium block">Cryptographic Verification</span>
-            <span className="text-2xl font-black text-indigo-600 font-mono mt-0.5 block">
+            <span className="text-slate-500 font-semibold block">Cryptographic Verification</span>
+            <span className="text-2xl font-bold text-indigo-600 font-mono tabular-nums tracking-tight mt-1 block">
               100%
             </span>
-            <span className="text-[11px] text-indigo-600 font-semibold">SHA-256 Validated</span>
+            <span className="text-[11px] text-indigo-600 font-medium mt-0.5 block">SHA-256 Validated</span>
           </div>
           <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
             <CheckCircle2 className="w-5 h-5" />

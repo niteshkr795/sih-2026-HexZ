@@ -1322,7 +1322,7 @@ export function TraderPortalView({ onBackToHome }: { onBackToHome?: () => void }
                     <Scale className="w-4 h-4 text-slate-400" />
                   </div>
                   <div className="mt-3">
-                    <span className="text-3xl font-black text-slate-900 font-mono">
+                    <span className="text-2xl sm:text-3xl font-bold text-slate-900 font-mono tabular-nums tracking-tight">
                       {telemetry.total}
                     </span>
                     <p className="text-[11px] text-slate-500 mt-1">In active store registry</p>
@@ -1330,13 +1330,13 @@ export function TraderPortalView({ onBackToHome }: { onBackToHome?: () => void }
                 </div>
 
                 {/* Stat 2: Valid & Certified */}
-                <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between">
+                <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-card flex flex-col justify-between">
                   <div className="flex items-center justify-between text-slate-500 text-xs font-semibold">
                     <span>Valid & Certified</span>
                     <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                   </div>
                   <div className="mt-3">
-                    <span className="text-3xl font-black text-emerald-600 font-mono">
+                    <span className="text-2xl sm:text-3xl font-bold text-emerald-600 font-mono tabular-nums tracking-tight">
                       {telemetry.valid}
                     </span>
                     <p className="text-[11px] text-emerald-700 font-semibold mt-1">
@@ -1351,14 +1351,14 @@ export function TraderPortalView({ onBackToHome }: { onBackToHome?: () => void }
                     setStatusFilter("EXPIRING_SOON");
                     setCurrentTab("instruments");
                   }}
-                  className="bg-white p-5 rounded-2xl border border-amber-200 hover:border-amber-400 cursor-pointer shadow-xs flex flex-col justify-between transition-all"
+                  className="bg-white p-5 rounded-2xl border border-amber-200 hover:border-amber-300 cursor-pointer shadow-card flex flex-col justify-between transition-all"
                 >
                   <div className="flex items-center justify-between text-slate-500 text-xs font-semibold">
                     <span className="text-amber-800">Expiring &lt; 30 Days</span>
                     <Clock className="w-4 h-4 text-amber-600" />
                   </div>
                   <div className="mt-3">
-                    <span className="text-3xl font-black text-amber-600 font-mono">
+                    <span className="text-2xl sm:text-3xl font-bold text-amber-600 font-mono tabular-nums tracking-tight">
                       {telemetry.expiring}
                     </span>
                     <p className="text-[11px] text-amber-700 font-semibold mt-1 flex items-center gap-1">
@@ -1371,14 +1371,14 @@ export function TraderPortalView({ onBackToHome }: { onBackToHome?: () => void }
                 {/* Stat 4: Re-verification Pending / Active Inspections */}
                 <div
                   onClick={() => setCurrentTab("applications")}
-                  className="bg-white p-5 rounded-2xl border border-slate-200 hover:border-blue-300 cursor-pointer shadow-xs flex flex-col justify-between transition-all"
+                  className="bg-white p-5 rounded-2xl border border-slate-200 hover:border-blue-300 cursor-pointer shadow-card flex flex-col justify-between transition-all"
                 >
                   <div className="flex items-center justify-between text-slate-500 text-xs font-semibold">
                     <span>Inspections Scheduled</span>
                     <Calendar className="w-4 h-4 text-blue-600" />
                   </div>
                   <div className="mt-3">
-                    <span className="text-3xl font-black text-[#1A56DB] font-mono">
+                    <span className="text-2xl sm:text-3xl font-bold text-blue-700 font-mono tabular-nums tracking-tight">
                       {applications.filter((a) => a.stage !== "COMPLETED").length}
                     </span>
                     <p className="text-[11px] text-slate-500 mt-1">Active field bookings</p>
@@ -1388,14 +1388,14 @@ export function TraderPortalView({ onBackToHome }: { onBackToHome?: () => void }
                 {/* Stat 5: Digital Certificates */}
                 <div
                   onClick={() => setCurrentTab("certificates")}
-                  className="col-span-2 lg:col-span-1 bg-white p-5 rounded-2xl border border-slate-200 hover:border-purple-300 cursor-pointer shadow-xs flex flex-col justify-between transition-all"
+                  className="col-span-2 lg:col-span-1 bg-white p-5 rounded-2xl border border-slate-200 hover:border-purple-300 cursor-pointer shadow-card flex flex-col justify-between transition-all"
                 >
                   <div className="flex items-center justify-between text-slate-500 text-xs font-semibold">
                     <span>e-Certificates Vault</span>
                     <Award className="w-4 h-4 text-purple-600" />
                   </div>
                   <div className="mt-3">
-                    <span className="text-3xl font-black text-purple-700 font-mono">
+                    <span className="text-2xl sm:text-3xl font-bold text-purple-700 font-mono tabular-nums tracking-tight">
                       {telemetry.valid}
                     </span>
                     <p className="text-[11px] text-purple-700 font-semibold mt-1 flex items-center gap-1">

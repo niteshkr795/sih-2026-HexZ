@@ -40,40 +40,40 @@ export const GatcAnalyticsView: React.FC<GatcAnalyticsViewProps> = ({ telemetry 
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-1">
-          <span className="text-xs font-medium text-slate-500">Monthly Calibrations Completed</span>
-          <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-black text-slate-900 font-mono">148</span>
-            <span className="text-xs text-emerald-600 font-bold">+18% YoY</span>
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-card space-y-1">
+          <span className="text-xs font-semibold text-slate-500">Monthly Calibrations Completed</span>
+          <div className="flex items-baseline gap-2 mt-2">
+            <span className="text-2xl sm:text-3xl font-bold text-slate-900 font-mono tabular-nums tracking-tight">148</span>
+            <span className="text-xs text-emerald-600 font-semibold">+18% YoY</span>
           </div>
-          <span className="text-[11px] text-slate-400">Target: 130 tests/month</span>
+          <span className="text-[11px] text-slate-500 font-normal mt-1 block">Target: 130 tests/month</span>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-1">
-          <span className="text-xs font-medium text-slate-500">First-Pass Conformity Rate</span>
-          <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-black text-emerald-600 font-mono">96.4%</span>
-            <span className="text-xs text-slate-400 font-mono">(143 / 148)</span>
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-card space-y-1">
+          <span className="text-xs font-semibold text-slate-500">First-Pass Conformity Rate</span>
+          <div className="flex items-baseline gap-2 mt-2">
+            <span className="text-2xl sm:text-3xl font-bold text-emerald-600 font-mono tabular-nums tracking-tight">96.4%</span>
+            <span className="text-xs text-slate-500 font-mono font-medium">(143 / 148)</span>
           </div>
-          <span className="text-[11px] text-slate-400">5 failed MPE tolerance</span>
+          <span className="text-[11px] text-slate-500 font-normal mt-1 block">5 failed MPE tolerance</span>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-1">
-          <span className="text-xs font-medium text-slate-500">Average Turnaround Time</span>
-          <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-black text-blue-600 font-mono">1.8 Days</span>
-            <span className="text-xs text-emerald-600 font-bold">-0.4d SLA</span>
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-card space-y-1">
+          <span className="text-xs font-semibold text-slate-500">Average Turnaround Time</span>
+          <div className="flex items-baseline gap-2 mt-2">
+            <span className="text-2xl sm:text-3xl font-bold text-blue-700 font-mono tabular-nums tracking-tight">1.8 Days</span>
+            <span className="text-xs text-emerald-600 font-semibold">-0.4d SLA</span>
           </div>
-          <span className="text-[11px] text-slate-400">Statutory SLA limit: 3.0 days</span>
+          <span className="text-[11px] text-slate-500 font-normal mt-1 block">Statutory SLA limit: 3.0 days</span>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-1">
-          <span className="text-xs font-medium text-slate-500">Central Passport Sync Ratio</span>
-          <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-black text-amber-600 font-mono">100%</span>
-            <span className="text-xs text-emerald-600 font-bold">Live Synced</span>
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-card space-y-1">
+          <span className="text-xs font-semibold text-slate-500">Central Passport Sync Ratio</span>
+          <div className="flex items-baseline gap-2 mt-2">
+            <span className="text-2xl sm:text-3xl font-bold text-amber-600 font-mono tabular-nums tracking-tight">100%</span>
+            <span className="text-xs text-emerald-600 font-semibold">Live Synced</span>
           </div>
-          <span className="text-[11px] text-slate-400">0 pending out-of-sync logs</span>
+          <span className="text-[11px] text-slate-500 font-normal mt-1 block">0 pending out-of-sync logs</span>
         </div>
       </div>
 

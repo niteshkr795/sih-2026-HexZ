@@ -75,54 +75,54 @@ export const TerritoryAnalyticsView: React.FC<TerritoryAnalyticsViewProps> = ({
 
       {/* 4 Primary KPI Telemetry Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
-        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-card">
           <div className="flex items-center justify-between mb-2">
             <span className="text-slate-500 font-semibold">Total Verified Passports</span>
             <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
               <ShieldCheck className="w-4 h-4" />
             </div>
           </div>
-          <span className="text-3xl font-black text-slate-900 font-mono block">864</span>
-          <span className="text-[11px] text-emerald-600 font-semibold flex items-center gap-1 mt-1">
+          <span className="text-2xl sm:text-3xl font-bold text-slate-900 font-mono tabular-nums tracking-tight block">864</span>
+          <span className="text-[11px] text-emerald-600 font-medium flex items-center gap-1 mt-1">
             <TrendingUp className="w-3 h-3" /> +14.2% vs previous quarter
           </span>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-card">
           <div className="flex items-center justify-between mb-2">
             <span className="text-slate-500 font-semibold">Compliance Pass Rate</span>
             <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600">
               <CheckCircle2 className="w-4 h-4" />
             </div>
           </div>
-          <span className="text-3xl font-black text-emerald-600 font-mono block">98.4%</span>
-          <span className="text-[11px] text-slate-500 font-medium block mt-1">
+          <span className="text-2xl sm:text-3xl font-bold text-emerald-600 font-mono tabular-nums tracking-tight block">98.4%</span>
+          <span className="text-[11px] text-slate-500 font-normal block mt-1">
             1.6% Seizure / Non-compliance
           </span>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-card">
           <div className="flex items-center justify-between mb-2">
             <span className="text-slate-500 font-semibold">Stamping Treasury Revenue</span>
             <div className="p-2 rounded-xl bg-purple-50 text-purple-600">
               <DollarSign className="w-4 h-4" />
             </div>
           </div>
-          <span className="text-3xl font-black text-purple-600 font-mono block">₹4,82,500</span>
-          <span className="text-[11px] text-slate-500 font-medium block mt-1">
+          <span className="text-2xl sm:text-3xl font-bold text-purple-700 font-mono tabular-nums tracking-tight block">₹4,82,500</span>
+          <span className="text-[11px] text-slate-500 font-normal block mt-1">
             Auto-reconciled via BharatKosh
           </span>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-card">
           <div className="flex items-center justify-between mb-2">
             <span className="text-slate-500 font-semibold">Average Audit Duration</span>
             <div className="p-2 rounded-xl bg-amber-50 text-amber-600">
               <Activity className="w-4 h-4" />
             </div>
           </div>
-          <span className="text-3xl font-black text-amber-600 font-mono block">12.4 min</span>
-          <span className="text-[11px] text-emerald-600 font-semibold flex items-center gap-1 mt-1">
+          <span className="text-2xl sm:text-3xl font-bold text-amber-600 font-mono tabular-nums tracking-tight block">12.4 min</span>
+          <span className="text-[11px] text-emerald-600 font-medium flex items-center gap-1 mt-1">
             <TrendingUp className="w-3 h-3" /> 3.2x faster than manual ledger
           </span>
         </div>

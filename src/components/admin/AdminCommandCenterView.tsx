@@ -61,7 +61,7 @@ export const AdminCommandCenterView: React.FC<AdminCommandCenterViewProps> = ({
 
         <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10 text-center min-w-[160px]">
           <span className="text-xs text-slate-300 font-medium block">National Compliance</span>
-          <span className="text-3xl font-black text-emerald-400 font-mono my-0.5">
+          <span className="text-2xl sm:text-3xl font-bold text-emerald-400 font-mono tabular-nums tracking-tight my-0.5 block">
             {telemetry.activeCompliantRate}%
           </span>
           <span className="text-[11px] text-slate-400 block">SLA Target: 92.0%</span>
@@ -71,75 +71,75 @@ export const AdminCommandCenterView: React.FC<AdminCommandCenterViewProps> = ({
       {/* 5 KPI Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {/* Total Registered */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-1">
-          <span className="text-xs font-medium text-slate-500 flex items-center justify-between">
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-card space-y-1">
+          <span className="text-xs font-semibold text-slate-500 flex items-center justify-between">
             Registered Instruments
             <Scale className="w-4 h-4 text-indigo-600" />
           </span>
-          <div className="flex items-baseline gap-1.5">
-            <span className="text-2xl font-black text-slate-900 font-mono">
+          <div className="flex items-baseline gap-1.5 mt-2">
+            <span className="text-2xl sm:text-3xl font-bold text-slate-900 font-mono tabular-nums tracking-tight">
               {telemetry.totalRegisteredInstruments.toLocaleString()}
             </span>
           </div>
-          <span className="text-[11px] text-emerald-600 font-semibold flex items-center gap-0.5">
+          <span className="text-[11px] text-emerald-600 font-medium flex items-center gap-0.5 mt-1">
             <ArrowUpRight className="w-3 h-3" /> +12.4% YoY Growth
           </span>
         </div>
 
         {/* Stamping Fee Revenue */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-1">
-          <span className="text-xs font-medium text-slate-500 flex items-center justify-between">
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-card space-y-1">
+          <span className="text-xs font-semibold text-slate-500 flex items-center justify-between">
             Stamping Fee Collected
             <IndianRupee className="w-4 h-4 text-emerald-600" />
           </span>
-          <div className="flex items-baseline gap-1.5">
-            <span className="text-2xl font-black text-emerald-700 font-mono">
+          <div className="flex items-baseline gap-1.5 mt-2">
+            <span className="text-2xl sm:text-3xl font-bold text-emerald-700 font-mono tabular-nums tracking-tight">
               {formatInrCr(telemetry.annualStampingFeeCollectedInr)}
             </span>
           </div>
-          <span className="text-[11px] text-slate-400">Direct treasury transfer</span>
+          <span className="text-[11px] text-slate-500 font-normal mt-1 block">Direct treasury transfer</span>
         </div>
 
         {/* Pending Inspections */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-1">
-          <span className="text-xs font-medium text-slate-500 flex items-center justify-between">
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-card space-y-1">
+          <span className="text-xs font-semibold text-slate-500 flex items-center justify-between">
             Pending Inspections
             <Clock className="w-4 h-4 text-amber-600" />
           </span>
-          <div className="flex items-baseline gap-1.5">
-            <span className="text-2xl font-black text-amber-600 font-mono">
+          <div className="flex items-baseline gap-1.5 mt-2">
+            <span className="text-2xl sm:text-3xl font-bold text-amber-600 font-mono tabular-nums tracking-tight">
               {telemetry.activeInspectionsPending}
             </span>
           </div>
-          <span className="text-[11px] text-slate-400">Assigned across zones</span>
+          <span className="text-[11px] text-slate-500 font-normal mt-1 block">Assigned across zones</span>
         </div>
 
         {/* Enforcement Seizures */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-1">
-          <span className="text-xs font-medium text-slate-500 flex items-center justify-between">
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-card space-y-1">
+          <span className="text-xs font-semibold text-slate-500 flex items-center justify-between">
             Seizures & Penalties
             <ShieldAlert className="w-4 h-4 text-rose-600" />
           </span>
-          <div className="flex items-baseline gap-1.5">
-            <span className="text-2xl font-black text-rose-600 font-mono">
+          <div className="flex items-baseline gap-1.5 mt-2">
+            <span className="text-2xl sm:text-3xl font-bold text-rose-600 font-mono tabular-nums tracking-tight">
               {telemetry.totalSeizuresAndViolations}
             </span>
           </div>
-          <span className="text-[11px] text-rose-600 font-medium">Sec 15/27 Enforcement</span>
+          <span className="text-[11px] text-rose-700 font-medium mt-1 block">Sec 15/27 Enforcement</span>
         </div>
 
         {/* GATC Lab Calibrations */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-1">
-          <span className="text-xs font-medium text-slate-500 flex items-center justify-between">
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-card space-y-1">
+          <span className="text-xs font-semibold text-slate-500 flex items-center justify-between">
             GATC Calibrations
             <CheckCircle2 className="w-4 h-4 text-blue-600" />
           </span>
-          <div className="flex items-baseline gap-1.5">
-            <span className="text-2xl font-black text-blue-700 font-mono">
+          <div className="flex items-baseline gap-1.5 mt-2">
+            <span className="text-2xl sm:text-3xl font-bold text-blue-700 font-mono tabular-nums tracking-tight">
               {telemetry.gatcCalibrationVolume.toLocaleString()}
             </span>
           </div>
-          <span className="text-[11px] text-slate-400">NABL Lab Certified</span>
+          <span className="text-[11px] text-slate-500 font-normal mt-1 block">NABL Lab Certified</span>
         </div>
       </div>
 
