@@ -299,7 +299,7 @@ export default function LandingPage() {
             </p>
 
             {/* Public Quick Verification Lookup Box */}
-            <div id="verification" className="bg-white p-5 sm:p-6 rounded-2xl shadow-card border border-slate-200/90 max-w-3xl mx-auto text-left mt-8 scroll-mt-28">
+            <div id="verification" className="bg-white p-5 sm:p-6 rounded-2xl shadow-card border border-slate-200/90 max-w-3xl mx-auto text-left mt-8 scroll-mt-48">
               <div className="flex items-center justify-between pb-3 border-b border-slate-100 text-xs font-semibold text-slate-700">
                 <span className="flex items-center gap-1.5 text-slate-800">
                   <QrCode className="w-4 h-4 text-blue-600" />

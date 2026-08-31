@@ -1437,51 +1437,49 @@ export function TraderPortalView({ onBackToHome }: { onBackToHome?: () => void }
 
                     {/* Stepper Pipeline */}
                     <div className="py-4">
-                      <div className="relative">
+                      <div className="relative flex w-full pt-2 pb-2">
                         {/* Line track */}
-                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-slate-100 rounded-full" />
-                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-3/4 h-1 bg-[#1A56DB] rounded-full transition-all duration-700" />
+                        <div className="absolute top-[24px] left-[10%] w-[80%] h-1 bg-slate-100 rounded-full" />
+                        <div className="absolute top-[24px] left-[10%] w-[40%] h-1 bg-[#1A56DB] rounded-full transition-all duration-700" />
 
-                        {/* 4 Steps */}
-                        <div className="relative flex justify-between items-center w-full">
-                          {[
-                            { label: "Request Submitted", sub: "Form-LM-01", done: true, current: false },
-                            { label: "Fee Paid & Verified", sub: "Challan Verified", done: true, current: false },
-                            { label: "LMO Assigned", sub: "Slot Booked", done: true, current: false },
-                            { label: "Inspector Field Visit", sub: "Tomorrow 11:30 AM", done: false, current: true },
-                            { label: "e-Cert Issued", sub: "QR Stamping", done: false, current: false },
-                          ].map((step, idx) => (
-                            <div key={idx} className="flex flex-col items-center gap-2 text-center w-20 sm:w-24">
-                              <div
-                                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold z-10 transition-all border-2 ${
-                                  step.done
-                                    ? "bg-[#1A56DB] border-[#1A56DB] text-white shadow-xs"
-                                    : step.current
-                                    ? "bg-white border-[#1A56DB] text-[#1A56DB] ring-4 ring-blue-100 font-extrabold"
-                                    : "bg-slate-100 border-slate-200 text-slate-400"
+                        {/* 5 Steps */}
+                        {[
+                          { label: "Request Submitted", sub: "Form-LM-01", done: true, current: false },
+                          { label: "Fee Paid", sub: "Verified", done: true, current: false },
+                          { label: "LMO Assigned", sub: "Slot Booked", done: true, current: false },
+                          { label: "Field Visit", sub: "Tomorrow 11:30", done: false, current: true },
+                          { label: "e-Cert Issued", sub: "QR Stamping", done: false, current: false },
+                        ].map((step, idx) => (
+                          <div key={idx} className="flex-1 flex flex-col items-center text-center z-10 relative">
+                            <div
+                              className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all border-2 mb-2 ${
+                                step.done
+                                  ? "bg-[#1A56DB] border-[#1A56DB] text-white shadow-xs"
+                                  : step.current
+                                  ? "bg-white border-[#1A56DB] text-[#1A56DB] ring-4 ring-blue-100 font-extrabold"
+                                  : "bg-slate-100 border-slate-200 text-slate-400"
+                              }`}
+                            >
+                              {step.done ? <Check className="w-4 h-4" /> : idx + 1}
+                            </div>
+                            <div className="px-1 flex flex-col items-center">
+                              <span
+                                className={`text-[10px] sm:text-[11px] font-bold block leading-tight ${
+                                  step.current
+                                    ? "text-[#1A56DB]"
+                                    : step.done
+                                    ? "text-slate-900"
+                                    : "text-slate-400"
                                 }`}
                               >
-                                {step.done ? <Check className="w-4 h-4" /> : idx + 1}
-                              </div>
-                              <div>
-                                <span
-                                  className={`text-[11px] font-bold block leading-tight ${
-                                    step.current
-                                      ? "text-[#1A56DB]"
-                                      : step.done
-                                      ? "text-slate-900"
-                                      : "text-slate-400"
-                                  }`}
-                                >
-                                  {step.label}
-                                </span>
-                                <span className="text-[10px] text-slate-400 block mt-0.5 font-mono">
-                                  {step.sub}
-                                </span>
-                              </div>
+                                {step.label}
+                              </span>
+                              <span className="text-[9px] sm:text-[10px] text-slate-400 block mt-0.5 font-mono leading-tight whitespace-nowrap">
+                                {step.sub}
+                              </span>
                             </div>
-                          ))}
-                        </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   </div>

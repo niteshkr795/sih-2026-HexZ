@@ -54,7 +54,7 @@ export const GovHeader: React.FC<GovHeaderProps> = ({
 
       {/* Top GIGW Accessibility & National Identity Bar */}
       <div className="bg-[#0b1c30] text-slate-200 text-xs px-3 sm:px-6 py-1.5 border-b border-slate-800">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+        <div className="w-full flex flex-wrap items-center justify-between gap-2">
           {/* Left: Govt Identity Text */}
           <div className="flex items-center space-x-2 text-[11px] sm:text-xs">
             <span className="font-semibold text-amber-400">भारत सरकार</span>
@@ -112,7 +112,7 @@ export const GovHeader: React.FC<GovHeaderProps> = ({
       </div>
 
       {/* Main Ministry Emblem & Brand Banner */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3">
+      <div className="w-full px-4 sm:px-6 py-3">
         <div className="flex items-center justify-between gap-4">
           {/* Official Emblem + Department Branding */}
           <div
@@ -167,7 +167,7 @@ export const GovHeader: React.FC<GovHeaderProps> = ({
 
       {/* Official Government Navigation Ribbon */}
       <nav className="bg-[#003366] text-white border-t border-[#002244] hidden md:block">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between text-xs font-semibold">
+        <div className="w-full px-4 sm:px-6 flex items-center justify-between text-xs font-semibold">
           <div className="flex items-center space-x-1 py-1 overflow-x-auto scrollbar-none">
             <button
               onClick={() => onSelectPortal("landing")}
@@ -175,7 +175,7 @@ export const GovHeader: React.FC<GovHeaderProps> = ({
                 currentPortal === "landing" ? "bg-white/20 text-white font-bold" : "hover:bg-white/10 text-slate-200"
               }`}
             >
-              Home / Overview
+              Home
             </button>
             <a
               href="#verification"
