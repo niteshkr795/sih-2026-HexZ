@@ -60,3 +60,10 @@
   background: #94a3b8;
 }
 
+
+/* Hide Google Translate Banner and Tooltips */
+.goog-te-banner-frame.skiptranslate, .goog-te-gadget-icon { display: none !important; }
+body { top: 0px !important; }
+#goog-gt-tt, .goog-te-balloon-frame { display: none !important; }
+.goog-text-highlight { background-color: transparent !important; box-shadow: none !important; }
+

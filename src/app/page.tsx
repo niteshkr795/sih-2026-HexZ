@@ -11,6 +11,7 @@ import { AdminDashboardView } from "@/components/admin/AdminDashboardView";
 import { GovHeader } from "@/components/gov/GovHeader";
 import { GovFooter } from "@/components/gov/GovFooter";
 import { StakeholderRegistrationModal } from "@/components/gov/StakeholderRegistrationModal";
+import { translations } from "@/translations";
 import {
   Shield,
   CheckCircle2,
@@ -51,6 +52,7 @@ export type PortalViewMode = "landing" | "trader" | "lmo" | "gatc" | "admin";
 export default function LandingPage() {
   const router = useRouter();
   const [activePortalView, setPortalState] = useState<PortalViewMode>("landing");
+  const t = translations["EN"];
 
   useEffect(() => {
     const handlePopState = () => {
@@ -287,26 +289,26 @@ export default function LandingPage() {
             {/* National Department Badge */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50/90 border border-blue-200/80 text-blue-900 text-xs font-semibold shadow-2xs">
               <Scale className="w-4 h-4 text-blue-700" />
-              <span>Department of Consumer Affairs • Legal Metrology Division</span>
+              <span>{t.heroDept}</span>
             </div>
 
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight leading-[1.18]">
-              National Online Verification & Digital Certification System
+              {t.heroTitle}
             </h1>
 
-            <p className="text-sm sm:text-base text-slate-600 max-w-3xl mx-auto leading-relaxed font-normal">
-              Under the <strong className="font-semibold text-slate-800">Legal Metrology Act, 2009</strong> and the <strong className="font-semibold text-slate-800">Legal Metrology (General) Rules, 2011</strong>, unified online portal for registration, verification application submission, LMO/GATC inspection allocation, QR-enabled digital certification, and validity lifecycle tracking.
+            <p className="text-base sm:text-lg text-slate-600 font-medium leading-relaxed max-w-3xl mx-auto">
+              {t.heroDesc}
             </p>
 
             {/* Public Quick Verification Lookup Box */}
-            <div id="verification" className="bg-white p-5 sm:p-6 rounded-2xl shadow-card border border-slate-200/90 max-w-3xl mx-auto text-left mt-8 scroll-mt-48">
+            <div id="verification" className="bg-white p-5 sm:p-6 rounded-2xl shadow-card border border-slate-200/90 max-w-3xl mx-auto text-left mt-8 scroll-mt-24">
               <div className="flex items-center justify-between pb-3 border-b border-slate-100 text-xs font-semibold text-slate-700">
                 <span className="flex items-center gap-1.5 text-slate-800">
                   <QrCode className="w-4 h-4 text-blue-600" />
-                  Instant Public Passport & Verification Certificate Search
+                  {t.searchTitle}
                 </span>
                 <span className="text-[11px] text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full font-mono border border-emerald-200 font-medium">
-                  Public Open Access
+                  {t.searchBadge}
                 </span>
               </div>
 
@@ -317,7 +319,7 @@ export default function LandingPage() {
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Enter Instrument ID (e.g. IN-MET-2026-8941) or Certificate Code..."
+                    placeholder={t.searchPlaceholder}
                     className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600/30 focus:border-blue-600 font-mono text-slate-900 transition shadow-2xs placeholder:text-slate-400"
                   />
                 </div>
@@ -330,7 +332,7 @@ export default function LandingPage() {
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   ) : (
                     <>
-                      <span>Verify Status</span>
+                      <span>{t.verifyStatus}</span>
                       <ArrowRight className="w-4 h-4" />
                     </>
                   )}
@@ -339,7 +341,7 @@ export default function LandingPage() {
 
               {/* Sample Search Pills */}
               <div className="flex flex-wrap items-center gap-2 mt-3 pt-2 text-xs text-slate-500 border-t border-slate-100">
-                <span className="font-medium text-slate-600">Sample Records:</span>
+                <span className="font-medium text-slate-600">{t.sampleRecords}</span>
                 <button
                   type="button"
                   onClick={() => {
@@ -454,10 +456,10 @@ export default function LandingPage() {
                 Role-Based Stakeholder Portals
               </div>
               <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-                Unified Portal Access for All Stakeholders
+                {t.stakeholderTitle}
               </h2>
               <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-2xl font-normal leading-relaxed">
-                Dedicated digital interfaces tailored for commercial instrument users, state inspection officers, accredited laboratories, and central regulators.
+                {t.stakeholderDesc}
               </p>
             </div>
 
@@ -466,7 +468,7 @@ export default function LandingPage() {
               className="px-4 py-2.5 rounded-xl bg-[#003366] hover:bg-[#0A2540] text-white font-semibold text-xs sm:text-sm shadow-xs transition flex items-center gap-2 cursor-pointer"
             >
               <UserCheck className="w-4 h-4" />
-              <span>New Stakeholder Registration</span>
+              <span>{t.newRegistration}</span>
             </button>
           </div>
 
@@ -559,10 +561,10 @@ export default function LandingPage() {
               Statutory Lifecycle Management
             </span>
             <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-              End-to-End Online Verification Workflow
+              {t.workflowTitle}
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
-              Standardized digital process replacing manual physical stamping ledgers under Rule 11 of the Legal Metrology (General) Rules, 2011.
+              {t.workflowDesc}
             </p>
           </div>
 

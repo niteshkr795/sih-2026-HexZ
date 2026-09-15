@@ -2,10 +2,9 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import { translations } from "@/translations";
 import {
   Phone,
-  Globe2,
-  CheckCircle2,
   Menu,
   X,
   Lock,
@@ -30,7 +29,8 @@ export const GovHeader: React.FC<GovHeaderProps> = ({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoginDropdownOpen, setIsLoginDropdownOpen] = useState(false);
   const [fontSize, setFontSize] = useState<"sm" | "base" | "lg">("base");
-  const [lang, setLang] = useState<"EN" | "HI">("EN");
+  
+  const t = translations["EN"];
 
   const changeFontSize = (size: "sm" | "base" | "lg") => {
     setFontSize(size);
@@ -43,33 +43,65 @@ export const GovHeader: React.FC<GovHeaderProps> = ({
     }
   };
 
-  return (
-    <header className="w-full bg-white shadow-sm border-b border-slate-200 z-50 sticky top-0">
-      {/* Tricolor National Stripe */}
-      <div className="h-1.5 w-full flex">
-        <div className="flex-1 bg-[#FF9933]" /> {/* Saffron */}
-        <div className="flex-1 bg-white border-y border-slate-200/50" /> {/* White */}
-        <div className="flex-1 bg-[#138808]" /> {/* Green */}
-      </div>
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
+    e.preventDefault();
+    
+    const triggerHighlight = (id: string) => {
+      const target = document.getElementById(id);
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+        // Add transition classes first
+        target.classList.add("transition-all", "duration-700");
+        
+        // Request a frame to ensure transition is applied before background color
+        requestAnimationFrame(() => {
+          target.classList.add("!bg-blue-200", "ring-4", "ring-blue-400", "rounded-3xl");
+        });
+        
+        // Remove it after 1.5 seconds
+        setTimeout(() => {
+          target.classList.remove("!bg-blue-200", "ring-4", "ring-blue-400", "rounded-3xl");
+        }, 1500);
+      }
+    };
 
-      {/* Top GIGW Accessibility & National Identity Bar */}
-      <div className="bg-[#0b1c30] text-slate-200 text-xs px-3 sm:px-6 py-1.5 border-b border-slate-800">
+    if (currentPortal !== "landing") {
+      onSelectPortal("landing");
+      setTimeout(() => triggerHighlight(targetId), 150);
+    } else {
+      triggerHighlight(targetId);
+    }
+    setIsMobileMenuOpen(false);
+  };
+
+  return (
+    <>
+      <div className="w-full bg-white relative z-40">
+        {/* Tricolor National Stripe */}
+        <div className="h-1.5 w-full flex">
+          <div className="flex-1 bg-[#FF9933]" /> {/* Saffron */}
+          <div className="flex-1 bg-white border-y border-slate-200/50" /> {/* White */}
+          <div className="flex-1 bg-[#138808]" /> {/* Green */}
+        </div>
+
+        {/* Top GIGW Accessibility & National Identity Bar */}
+        <div className="bg-[#0b1c30] text-slate-200 text-xs px-3 sm:px-6 py-1.5 border-b border-slate-800">
         <div className="w-full flex flex-wrap items-center justify-between gap-2">
           {/* Left: Govt Identity Text */}
           <div className="flex items-center space-x-2 text-[11px] sm:text-xs">
-            <span className="font-semibold text-amber-400">भारत सरकार</span>
+            <span className="font-semibold text-amber-400">{t.govOfIndia}</span>
             <span className="text-slate-500">|</span>
-            <span className="font-medium text-slate-300">Government of India</span>
+            <span className="font-medium text-slate-300">{t.govOfIndia}</span>
             <span className="hidden md:inline text-slate-500">•</span>
             <span className="hidden md:inline text-slate-300">
-              Department of Consumer Affairs (DoCA)
+              {t.deptConsumerAffairs}
             </span>
           </div>
 
           {/* Right: Accessibility Controls */}
           <div className="flex items-center space-x-3 text-[11px]">
             <div className="hidden sm:flex items-center space-x-1 border-r border-slate-700 pr-3">
-              <span className="text-slate-400">Text Size:</span>
+              <span className="text-slate-400">{t.textSize}</span>
               <button
                 onClick={() => changeFontSize("sm")}
                 className={`px-1.5 py-0.5 rounded ${fontSize === "sm" ? "bg-blue-600 text-white" : "hover:text-white"}`}
@@ -93,30 +125,58 @@ export const GovHeader: React.FC<GovHeaderProps> = ({
               </button>
             </div>
 
-            {/* Language Switch */}
-            <button
-              onClick={() => setLang(lang === "EN" ? "HI" : "EN")}
-              className="flex items-center gap-1 hover:text-white font-medium bg-slate-800 px-2 py-0.5 rounded border border-slate-700 text-[10px] sm:text-xs"
-            >
-              <Globe2 className="w-3 h-3 text-amber-400" />
-              <span>{lang === "EN" ? "हिन्दी" : "English"}</span>
-            </button>
-
             {/* Helpline */}
             <div className="hidden lg:flex items-center gap-1.5 text-emerald-400 font-mono text-[11px]">
               <Phone className="w-3 h-3" />
-              <span>Toll Free: 1800-11-4000</span>
+              <span>{t.tollFree} 1800-11-4000</span>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Main Ministry Emblem & Brand Banner */}
-      <div className="w-full px-4 sm:px-6 py-3">
+      
+      {/* Main Ministry Emblem & Brand Banner (Desktop - static, scrolls away) */}
+      <div className="hidden md:block w-full px-4 sm:px-6 py-3">
+        <div className="flex items-center justify-between gap-4">
+          <div
+            onClick={() => {
+              onSelectPortal("landing");
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className="flex items-center space-x-3 cursor-pointer group"
+          >
+            <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden border border-slate-200 shadow-xs flex-shrink-0 bg-white p-1">
+              <Image src="/logo.jpg" alt="Emblem of India / DigiPass" fill className="object-contain" priority />
+            </div>
+            <div className="text-left">
+              <div className="text-[11px] sm:text-xs font-semibold text-slate-600 tracking-wide uppercase">
+                {t.ministryName}
+              </div>
+              <div className="text-sm sm:text-lg font-bold text-slate-900 tracking-tight leading-snug">
+                {t.divisionName} • Legal Metrology Division
+              </div>
+              <div className="text-[11px] sm:text-xs text-slate-500 font-normal flex items-center gap-1.5 mt-0.5">
+                <span className="font-semibold text-blue-700">{t.eMaapak}</span>
+                <span>•</span>
+                <span>{t.actRules}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    {/* Sticky Header Container */}
+      <header className="sticky top-0 z-50 w-full bg-white shadow-sm border-b border-slate-200 flex flex-col transition-all duration-300">
+        
+      {/* Main Ministry Emblem & Brand Banner (Mobile - sticky) */}
+      <div className="md:hidden w-full px-4 sm:px-6 py-3">
         <div className="flex items-center justify-between gap-4">
           {/* Official Emblem + Department Branding */}
           <div
-            onClick={() => onSelectPortal("landing")}
+            onClick={() => {
+              onSelectPortal("landing");
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
             className="flex items-center space-x-3 cursor-pointer group"
           >
             {/* National Emblem & Logo Graphic */}
@@ -132,15 +192,15 @@ export const GovHeader: React.FC<GovHeaderProps> = ({
 
             <div className="text-left">
               <div className="text-[11px] sm:text-xs font-semibold text-slate-600 tracking-wide uppercase">
-                उपभोक्ता मामले, खाद्य और सार्वजनिक वितरण मंत्रालय
+                {t.ministryName}
               </div>
               <div className="text-sm sm:text-lg font-bold text-slate-900 tracking-tight leading-snug">
-                विधि मापविज्ञान प्रभाग • Legal Metrology Division
+                {t.divisionName} • Legal Metrology Division
               </div>
               <div className="text-[11px] sm:text-xs text-slate-500 font-normal flex items-center gap-1.5 mt-0.5">
-                <span className="font-semibold text-blue-700">e-Maapak Portal</span>
+                <span className="font-semibold text-blue-700">{t.eMaapak}</span>
                 <span>•</span>
-                <span>Legal Metrology Act, 2009 & General Rules, 2011</span>
+                <span>{t.actRules}</span>
               </div>
             </div>
           </div>
@@ -152,7 +212,7 @@ export const GovHeader: React.FC<GovHeaderProps> = ({
               className="px-3 py-1.5 bg-[#FF9933] text-slate-950 text-xs font-bold rounded-lg shadow-sm flex items-center gap-1"
             >
               <Lock className="w-3 h-3" />
-              <span>Login</span>
+              <span>{t.login}</span>
             </button>
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -170,39 +230,47 @@ export const GovHeader: React.FC<GovHeaderProps> = ({
         <div className="w-full px-4 sm:px-6 flex items-center justify-between text-xs font-semibold">
           <div className="flex items-center space-x-1 py-1 overflow-x-auto scrollbar-none">
             <button
-              onClick={() => onSelectPortal("landing")}
+              onClick={() => {
+                onSelectPortal("landing");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
               className={`px-3.5 py-2 rounded-lg transition-colors ${
                 currentPortal === "landing" ? "bg-white/20 text-white font-bold" : "hover:bg-white/10 text-slate-200"
               }`}
             >
-              Home
+              {t.home}
             </button>
             <a
               href="#verification"
+              onClick={(e) => handleNavClick(e, "verification")}
               className="px-3.5 py-2 rounded-lg hover:bg-white/10 text-slate-200 transition-colors"
             >
-              Public Certificate Verify
+              {t.verifyCert}
             </a>
             <a
               href="#registration"
+              onClick={(e) => handleNavClick(e, "registration")}
               className="px-3.5 py-2 rounded-lg hover:bg-white/10 text-slate-200 transition-colors"
             >
-              Stakeholder Registration
+              {t.registration}
             </a>
             <a
               href="#workflow"
+              onClick={(e) => handleNavClick(e, "workflow")}
               className="px-3.5 py-2 rounded-lg hover:bg-white/10 text-slate-200 transition-colors"
             >
-              Verification Workflow
+              {t.workflow}
             </a>
             <a
               href="#standards"
+              onClick={(e) => handleNavClick(e, "standards")}
               className="px-3.5 py-2 rounded-lg hover:bg-white/10 text-slate-200 transition-colors"
             >
-              Act & Rules (2009/2011)
+              {t.actAndRulesMenu}
             </a>
             <a
               href="#faq"
+              onClick={(e) => handleNavClick(e, "faq")}
               className="px-3.5 py-2 rounded-lg hover:bg-white/10 text-slate-200 transition-colors"
             >
               Citizen FAQ & Helpdesk
@@ -336,6 +404,7 @@ export const GovHeader: React.FC<GovHeaderProps> = ({
               onClick={() => {
                 onSelectPortal("landing");
                 setIsMobileMenuOpen(false);
+                window.scrollTo({ top: 0, behavior: "smooth" });
               }}
               className="w-full text-left p-2 hover:bg-slate-800 rounded-lg font-medium"
             >
@@ -343,28 +412,28 @@ export const GovHeader: React.FC<GovHeaderProps> = ({
             </button>
             <a
               href="#registration"
-              onClick={() => setIsMobileMenuOpen(false)}
+              onClick={(e) => handleNavClick(e, "registration")}
               className="block p-2 hover:bg-slate-800 rounded-lg font-medium"
             >
               📝 Stakeholder Registration
             </a>
             <a
               href="#workflow"
-              onClick={() => setIsMobileMenuOpen(false)}
+              onClick={(e) => handleNavClick(e, "workflow")}
               className="block p-2 hover:bg-slate-800 rounded-lg font-medium"
             >
               🔄 Verification Workflow
             </a>
             <a
               href="#standards"
-              onClick={() => setIsMobileMenuOpen(false)}
+              onClick={(e) => handleNavClick(e, "standards")}
               className="block p-2 hover:bg-slate-800 rounded-lg font-medium"
             >
               📜 Legal Metrology Act & Rules
             </a>
             <a
               href="#faq"
-              onClick={() => setIsMobileMenuOpen(false)}
+              onClick={(e) => handleNavClick(e, "faq")}
               className="block p-2 hover:bg-slate-800 rounded-lg font-medium"
             >
               ❓ Citizen FAQ & Helpdesk
@@ -433,6 +502,7 @@ export const GovHeader: React.FC<GovHeaderProps> = ({
         </div>
       )}
     </header>
+    </>
   );
 };
 
